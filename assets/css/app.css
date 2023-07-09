@@ -4,12 +4,29 @@
 
 /* This file is for your main application CSS */
 
-.action {
-    width: 500px;
+.action_manager_menu {
+    @media screen and (min-width: 769px) {
+        /* 769px以上に適用されるCSS */
+        max-width: calc(100% - 300px);
+        min-width: calc(100% - 300px);
+    };
 
     @media screen and (max-width: 768px) {
         /* 768px以下に適用されるCSS（タブレット用） */
-        width: 300px;
+    }
+}
+.action_side_menu {
+    @media screen and (max-width: 768px) {
+        /* 768px以下に適用されるCSS（タブレット用） */
+        right: 0px;
+    }
+}
+
+.hello {
+    min-width: 500px;
+    @media screen and (max-width: 768px) {
+        /* 768px以下に適用されるCSS（タブレット用） */
+        min-width: 100%;
     }
 }
 

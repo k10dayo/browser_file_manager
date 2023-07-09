@@ -3,6 +3,7 @@ defmodule BrowserFileManagerWeb.ImageView do
   alias BrowserFileManagerWeb.DataShape
 
   @xampp_http_ip Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
+  @root_path Application.fetch_env!(:browser_file_manager, :root)
 
   def mount(params, _session, socket) do
       # 現在の相対パスを取得
@@ -88,7 +89,6 @@ defmodule BrowserFileManagerWeb.ImageView do
 
   # 以下関数
   def get_image_list(relative_path) do
-      root_path = Application.fetch_env!(:browser_file_manager, :root)
 
       parent_path = (
       if "" != relative_path do
@@ -99,7 +99,7 @@ defmodule BrowserFileManagerWeb.ImageView do
       ""
       end)
 
-      parent_path = root_path <> parent_path
+      parent_path = @root_path <> parent_path
       image_list = System.shell("cd #{parent_path} && ls")
       |> DataShape.format_ls()
       |> DataShape.filter_images()

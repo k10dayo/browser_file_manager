@@ -1,6 +1,6 @@
-<div class="w-screen h-screen flex relative">
+<div class="w-screen h-screen overflow-x-hidden flex relative">
 
-    <div class="w-full">
+    <div id="manager_menu" class="min-w-full max-w-full duration-500">
 
         <div class="w-full h-[50px] flex justify-between">
             <div>
@@ -31,12 +31,12 @@
                 <% end %>
 
                 <%= if s.file_category == "i" do %>
-                    <div class="item_data m-3 w-[100px]">
+                    <div class="item_data m-3 w-[100px] ">
                         <.link href={~p"/image_view?path=#{s.file_path}"}>
                             <div class="w-full h-[100px] bg-gray-300">
                                 <% img_path = @xampp_http_ip <> s.file_path %>
                                 <!-- <div class={" w-full h-full bg-center bg-contain bg-no-repeat "} style={"background-image: url('#{img_path}')"}></div> -->
-                                <img src={"#{img_path}"} class="item_image object-contain w-full h-full" loading="lazy">
+                                <img src={"#{img_path}"} class="item_image object-contain w-full h-full bg-[url('/images/loading.png')] bg-contain bg-center bg-no-repeat" loading="lazy">
                             </div>
                         </.link>
                         <div class="item_info break-all">
@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <nav id="side_menu" class="md:w-[500px] w-[300px] h-screen  bg-red-300 md:static absolute right-0 duration-500">
+    <nav id="side_menu" class="min-w-[300px] h-screen  bg-red-300 md:static absolute right-[-300px] duration-500">
         <div class="w-full h-full relative">
             <div id="hamburger_button" class="w-[50px] h-[50px] bg-red-300 absolute -left-[50px] rounded-xl rounded-r-none bg-[url(/images/hamburger.png)] bg-center bg-contain bg-no-repeat"></div>
             <div class="w-full h-[30%]">
