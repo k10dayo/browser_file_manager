@@ -3,3 +3,17 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+.action {
+    width: 500px;
+
+    @media screen and (max-width: 768px) {
+        /* 768px以下に適用されるCSS（タブレット用） */
+        width: 300px;
+    }
+}
+
+/* スクロールバー非表示 */
+body::-webkit-scrollbar {
+    display: none;
+}

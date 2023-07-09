@@ -18,6 +18,10 @@ defmodule BrowserFileManagerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    get "/manager", PageController, :manager
+
+    live "/image_view", ImageView
   end
 
   # Other scopes may use custom stacks.
