@@ -22,6 +22,7 @@ defmodule BrowserFileManagerWeb.Router do
     get "/manager", PageController, :manager
 
     live "/image_view", ImageView
+    live "/live", ManagerLive, :index
   end
 
   # Other scopes may use custom stacks.
