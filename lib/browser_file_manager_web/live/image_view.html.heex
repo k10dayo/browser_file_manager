@@ -14,6 +14,12 @@
     <% end %>
     <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["mp4"] do %>
             <video src={"#{@content_path}"} autoplay controls></video>
+
+            <div class="absolute left-0 w-[50px] h-[50px]">
+                <.link href={~p"/live?path=#{@parent_path}"}>
+                    <img src="/images/back_button.png" class="absolute object-contain w-[50px] h-[50px]">
+                </.link>
+            </div>
     <% end %>
 
 </div>
