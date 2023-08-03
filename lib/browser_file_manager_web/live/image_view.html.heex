@@ -3,7 +3,13 @@
     <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["png", "jpg", "jpeg", "webp"] do %>
         <img src={"#{@content_path}"} class="object-contain">
 
-        <div class="absolute left-0 bg-red-100 h-full w-[20%] flex opacity-5" phx-click="left"><img src="/images/left_arrow.png" class="m-auto"></div>
+        <!-- 左右のボタン --->
+        <div class="absolute left-0 bg-red-100 h-full w-[20%] flex opacity-5" phx-click="left">
+            <.link href={~p"/live?path=#{@parent_path}"}>
+                <img src="/images/back_button.png" class="absolute object-contain w-[50px] h-[50px]">
+            </.link>
+            <img src="/images/left_arrow.png" class="m-auto">
+        </div>
         <div class="absolute right-0 bg-blue-100 h-full w-[20%] flex opacity-5" phx-click="right"><img src="/images/right_arrow.png" class="m-auto"></div>
     <% end %>
     <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["mp4"] do %>

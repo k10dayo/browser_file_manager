@@ -1,6 +1,6 @@
 <div class="w-screen h-screen overflow-x-hidden flex relative">
 
-    <div id="manager_menu" class={"min-w-full max-w-full duration-500  #{@manager_menu_status}"}>
+    <div id="manager_menu" class={"min-w-full max-w-full duration-500 #{@manager_menu_status}"}>
 
         <div class="w-full h-[50px] flex justify-between">
             <div>
@@ -23,7 +23,7 @@
                                 <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">
                             </div>
                         </div>
-                        <div class="item_info break-all h-[50px] overflow-y-hidden">
+                        <div class="item_info break-all h-[50px] overflow-y-hidden" id={"#{s.file_name}"} phx-hook="ItemInfoClick">
                             <!-- <p><%= s.file_category %></p> -->
                             <p class="item_name"><%= s.file_name %></p>
                             <!-- <p><%= s.file_path %></p> -->
@@ -40,7 +40,7 @@
                                 <img src={"#{img_path}"} class="item_image object-contain w-full h-full bg-[url('/images/loading.png')] bg-contain bg-center bg-no-repeat" loading="lazy">
                             </div>
                         </.link>
-                        <div class="item_info break-all h-[50px] overflow-y-hidden">
+                        <div class="item_info break-all h-[50px] overflow-y-hidden" id={"#{s.file_name}"} phx-hook="ItemInfoClick">
                             <!-- <p><%= s.file_category %></p> -->
                             <p class="item_name"><%= s.file_name %></p>
                             <!-- <p><%= s.file_path %></p> -->
@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                         </.link>
-                        <div class="item_info break-all h-[50px] overflow-y-hidden">
+                        <div class="item_info break-all h-[50px] overflow-y-hidden" id={"#{s.file_name}"} phx-hook="ItemInfoClick">
                             <!-- <p><%= s.file_category %></p> -->
                             <p class="item_name"><%= s.file_name %></p>
                             <!-- <p><%= s.file_path %></p> -->
@@ -72,7 +72,7 @@
                                 <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                             </div>
                         </.link>
-                        <div class="item_info break-all h-[50px] overflow-y-hidden">
+                        <div class="item_info break-all h-[50px] overflow-y-hidden" id={"#{s.file_name}"} phx-hook="ItemInfoClick">
                             <!-- <p><%= s.file_category %></p> -->
                             <p class="item_name"><%= s.file_name %></p>
                             <!-- <p><%= s.file_path %></p> -->
@@ -85,37 +85,26 @@
         </div>
     </div>
 
-    <nav id="side_menu" class={"min-w-[300px] h-screen  bg-red-300 md:static absolute right-[-300px] duration-500"}>
+    <nav id="side_menu" class={"min-w-[300px] h-screen  bg-red-300 md:static absolute right-[-300px] duration-500 #{@side_menu_status}"}>
         <div class="w-full h-full relative">
-            <div id="hamburger_button" phx-click="hamburger" class="w-[50px] h-[50px] bg-red-300 absolute -left-[50px] rounded-xl rounded-r-none bg-[url(/images/hamburger.png)] bg-center bg-contain bg-no-repeat"></div>
+            <div id="hamburger_button" phx-click="hamburger" phx-hook="HamburgerClick" class="w-[50px] h-[50px] bg-red-300 absolute -left-[50px] rounded-xl rounded-r-none bg-[url(/images/hamburger.png)] bg-center bg-contain bg-no-repeat"></div>
             <div class="w-full h-[30%]">
                 <img id="side_menu_image" src="/images/folder.png" class="object-contain w-full h-full" >
             </div>
             <div class="w-full h-[70%] bg-green-300">
                 <div id="side_menu_name"><%= @path %></div>
+
+
+                <.link patch={~p"/live/new"}>
+                    <.button>New Tag</.button>
+                </.link>
+
+
             </div>
         </div>
     </nav>
 </div>
-<script src="/assets/my_script.js" ></script>
-<script>
-    $(function(){
-        // ここに処理を書く
-    
-        console.log("hello")
-        // $("#hamburger_button").on('click', function() {
-        //     $("#manager_menu").toggleClass("action_manager_menu");
-        //     $("#side_menu").toggleClass("action_side_menu");
-        // })
-    
-        $(".item_info").on('click', function() {
-            console.log("アイテムクリック")
-            item_data = $(this).parent()
-            item_image = item_data.find('img').attr('src')
-            item_name = $(this).children('.item_name').text();
-    
-            $("#side_menu_name").text(item_name);
-            $("#side_menu_image").attr("src", item_image)
-        })
-    });
-</script>
+
+<.modal :if={@live_action in [:new, :edit]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
+    <div>hello</div>
+</.modal>

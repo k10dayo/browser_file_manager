@@ -23,6 +23,7 @@ defmodule BrowserFileManagerWeb.Router do
 
     live "/image_view", ImageView
     live "/live", ManagerLive, :index
+    live "/live/new", ManagerLive, :new
   end
 
   # Other scopes may use custom stacks.
