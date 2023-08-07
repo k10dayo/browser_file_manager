@@ -10,7 +10,7 @@ defmodule BrowserFileManagerWeb.TagController do
   end
 
   def new(conn, _params) do
-    changeset = Information.change_tag_with_property(%Tag{})
+    changeset = Information.change_tag(%Tag{})
     render(conn, :new, changeset: changeset)
   end
 

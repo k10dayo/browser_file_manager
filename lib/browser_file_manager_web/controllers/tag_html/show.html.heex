@@ -8,9 +8,9 @@
   </:actions>
 </.header>
 
+<% tag_property = if @tag.property != nil, do: @tag.property.name, else: "" %>
 <.list>
   <:item title="Name"><%= @tag.name %></:item>
-  <:item title="Property"><%= @tag.property.name %></:item>
+  <:item title="Property"><%= tag_property %></:item>
 </.list>
-
 <.back navigate={~p"/tags"}>Back to tags</.back>

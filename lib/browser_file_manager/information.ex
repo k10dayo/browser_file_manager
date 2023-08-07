@@ -204,21 +204,16 @@ defmodule BrowserFileManager.Information do
       %Ecto.Changeset{data: %Tag{}}
 
   """
+  # def change_tag(%Tag{} = tag, attrs \\ %{}) do
+  #   Tag.changeset(tag, attrs)
+  # end
+
   def change_tag(%Tag{} = tag, attrs \\ %{}) do
-    Tag.changeset(tag, attrs)
-  end
+    # property = attrs["property_id"]
 
-  def change_tag_with_property(%Tag{} = tag, attrs \\ %{}) do
-    property = attrs["property_id"]
-
-    hello = tag
+    tag
     |> Repo.preload(:property)
     |> Tag.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:property, property)
-
-    IO.puts "change_tag_with_property"
-    IO.puts inspect hello
-    hello
-
+    #|> Ecto.Changeset.put_assoc(:property, property)
   end
 end

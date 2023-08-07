@@ -7,5 +7,7 @@ defmodule BrowserFileManager.Repo.Migrations.CreateProperties do
 
       timestamps()
     end
+
+    create unique_index(:properties, [:name])
   end
 end

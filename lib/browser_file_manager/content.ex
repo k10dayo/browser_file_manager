@@ -18,6 +18,9 @@ defmodule BrowserFileManager.Content do
       [%File{}, ...]
 
   """
+  # def list_files do
+  #   Repo.all(File)
+  # end
   def list_files do
     Repo.all(File)
   end
@@ -36,7 +39,12 @@ defmodule BrowserFileManager.Content do
       ** (Ecto.NoResultsError)
 
   """
-  def get_file!(id), do: Repo.get!(File, id)
+  # def get_file!(id), do: Repo.get!(File, id)
+  def get_file!(id) do
+    File
+    |> Repo.get!(id)
+    |> Repo.preload(:tags)
+  end
 
   @doc """
   Creates a file.
@@ -75,59 +83,70 @@ defmodule BrowserFileManager.Content do
   """
   def update_file(%File{} = file, attrs) do
     file
-    |> File.changeset(attrs)
+    # |> File.changeset(attrs)
+    |> change_file(attrs)
     |> Repo.update()
   end
 
 
   #root_selectが一番最初の入口になる
-  #追加するファイルがルートにある時
+  #受け取ったパスが１つのとき（ルートのファイルを追加編集するとき）
   def root_select([last], attrs, file) do
     IO.puts "ルートセレクト（ラスト）"
     id = Repo.one(from u in File, select: u.id, where: is_nil(u.parent_id), where: u.name == ^last)
-    #もしデータが存在していたら
+    #もしデータが存在していたらアップデートする
     if id != nil do
       file = get_file!(id)
       attrs = Map.put(attrs, "name", last)
       attrs = Map.put(attrs, "parent_id", nil)
       update_file(file, attrs)
     else
+      #データがなかった場合は作成する
       root_insert([last], attrs, file)
     end
   end
+  #受け取ったパスが２つ以上のとき（ルートより下のファイルを追加編集するとき）
   def root_select(path, attrs, file) when is_list(path) do
     IO.puts "ルートセレクト"
-    IO.puts inspect path
     [head | tail] = path
     id = Repo.one(from u in File, select: u.id, where: is_nil(u.parent_id), where: u.name == ^head)
+    #もしデータがあれば、その下のパスを検索する
     if id != nil do
       rest_select(tail, id, attrs, file)
     else
+      #データがなかったら作成する
       root_insert(path, attrs, file)
     end
   end
+  #２つ目以降で最後のパスを探す関数
   def rest_select([last], parent_id, attrs, file) do
     IO.puts "レストセレクト（ラスト）"
     id = Repo.one(from u in File, select: u.id, where: u.parent_id == ^parent_id, where: u.name == ^last)
+    #ファイルが存在する場合はアップデート
     if id != nil do
       file = get_file!(id)
       attrs = Map.put(attrs, "name", last)
       attrs = Map.put(attrs, "parent_id", parent_id)
       update_file(file, attrs)
     else
+      #データがなかったら作成する
       rest_insert([last], parent_id, attrs, file)
     end
   end
+  #２つ目以降のパスを探す関数
   def rest_select(path, parent_id, attrs, file) do
     IO.puts "レストセレクト"
     [head | tail] = path
     id = Repo.one(from u in File, select: u.id, where: u.parent_id == ^parent_id, where: u.name == ^head)
+    #ファイルが存在する場合は、その下のパスを検索する
     if id != nil do
       rest_select(tail, id, attrs, file)
     else
+      #データがなかったら作成する
       rest_insert(path, parent_id, attrs, file)
     end
   end
+  #追加編集するファイルがルートのとき作成する関数
   def root_insert([last], attrs, file) do
     IO.puts "ルートインサート（ラスト）"
     attrs = Map.put(attrs, "name", last)
@@ -135,14 +154,17 @@ defmodule BrowserFileManager.Content do
     |> change_file(attrs)
     |> Repo.insert()
   end
+  #ルートのデータを作成する関数
   def root_insert([head | tail], attrs, file) do
     IO.puts "ルートインサート"
     %File{}
     |> change_file(%{"name" => head, "parent_id" => "", "star" => "", "tag_ids" => []})
     |> Repo.insert()
     id = Repo.one(from u in File, select: u.id, where: is_nil(u.parent_id), where: u.name == ^head)
+    #作成したファイルの下のデータを作成する
     rest_insert(tail, id, attrs, file)
   end
+  #２つ目以降の追加編集するファイルを作成する関数
   def rest_insert([last], parent_id, attrs, file) do
     IO.puts "レストインサート（ラスト）"
     attrs = Map.put(attrs, "name", last)
@@ -151,12 +173,14 @@ defmodule BrowserFileManager.Content do
     |> change_file(attrs)
     |> Repo.insert()
   end
+  #２つ目以降のファイルを作成する関数
   def rest_insert([head | tail], parent_id, attrs, file) do
     IO.puts "レストインサート"
     %File{}
     |> change_file(%{"name" => head, "parent_id" => parent_id, "star" => "", "tag_ids" => []})
     |> Repo.insert()
     id = Repo.one(from u in File, select: u.id, where: u.parent_id == ^parent_id, where: u.name == ^head)
+    #作成したファイルの下のデータを作成する
     rest_insert(tail, id, attrs, file)
   end
 

@@ -15,7 +15,6 @@ defmodule BrowserFileManagerWeb.FileController do
   end
 
   def create(conn, params) do
-    IO.puts "ファイルクリエイト"
     file_params = params["file"]
     tag_ids = if Map.has_key?(params, "hello"), do: params["hello"], else: []
     file_params = Map.put(file_params, "tag_ids", tag_ids)
@@ -43,7 +42,14 @@ defmodule BrowserFileManagerWeb.FileController do
     render(conn, :edit, file: file, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "file" => file_params}) do
+  def update(conn, params) do
+    IO.puts inspect params
+    id = params["id"]
+    file_params = params["file"]
+    tag_ids = if Map.has_key?(params, "hello"), do: params["hello"], else: []
+    file_params = Map.put(file_params, "tag_ids", tag_ids)
+    IO.puts inspect file_params
+
     file = Content.get_file!(id)
 
     case Content.update_file(file, file_params) do

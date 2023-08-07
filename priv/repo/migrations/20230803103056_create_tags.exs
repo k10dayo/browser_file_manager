@@ -10,5 +10,6 @@ defmodule BrowserFileManager.Repo.Migrations.CreateTags do
     end
 
     create index(:tags, [:property_id])
+    create unique_index(:tags, [:name, :property_id])
   end
 end

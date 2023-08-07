@@ -11,6 +11,12 @@
 <.list>
   <:item title="Name"><%= @file.name %></:item>
   <:item title="Star"><%= @file.star %></:item>
+  <:item title="Parent"><%= @file.parent_id %></:item>
+  <:item title="Tags">
+    <%= for tag <- @file.tags do%>
+      <div><%= tag.name %></div>
+    <% end %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/files"}>Back to files</.back>

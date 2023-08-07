@@ -19,6 +19,7 @@
 
 <.table id="tags" rows={@tags} row_click={&JS.navigate(~p"/tags/#{&1}")}>
   <:col :let={tag} label="Name"><%= tag.name %></:col>
+  <:col :let={tag} label="Property"><%= if tag.property != nil, do: tag.property.name, else: "" %></:col>
   <:action :let={tag}>
     <div class="sr-only">
       <.link navigate={~p"/tags/#{tag}"}>Show</.link>
