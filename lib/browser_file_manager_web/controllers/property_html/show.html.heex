@@ -1,0 +1,15 @@
+<.header>
+  Property <%= @property.id %>
+  <:subtitle>This is a property record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/properties/#{@property}/edit"}>
+      <.button>Edit property</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @property.name %></:item>
+</.list>
+
+<.back navigate={~p"/properties"}>Back to properties</.back>

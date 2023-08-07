@@ -1,0 +1,62 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:star]} type="number" label="Star" />
+  <.input field={f[:parent_id]} type="number" label="Parent" />
+
+
+  <% tag_zip = tag_select_origin f, @changeset %>
+  <div class="font-bold">Tags</div>
+  <div>
+    <select multiple="multiple" name="hello[]"}>
+      <%= for x <- tag_zip do %>
+        <optgroup label={"#{elem(x, 0).name}"}>
+          <%= for y <- elem(x, 1) do%>
+            <%= if y.selected do%>
+              <option value={"#{y.value}"} selected="true" ><%= inspect y.key %></option>
+            <% else %>
+            <option value={"#{y.value}"}><%= inspect y.key %></option>
+            <% end %>
+            
+          <% end %>
+        </optgroup>
+      <% end %>
+    </select>
+  </div>
+
+
+  <:actions>
+    <.button>Save File</.button>
+  </:actions>
+</.simple_form>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<!-- <script src="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.js"></script> -->
+<script src="/assets/multiple_select.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.css">
+
+<script>
+  $(function () {
+      $('select').multipleSelect({
+          width: 500,
+          isOpen: true,
+          keepOpen: true,
+          multiple: true,
+          filter: true,
+          filterGroup: true,
+          hideOptgroupCheckboxes: true,
+          multipleWidth: "auto",
+          formatSelectAll: function() {
+              return 'すべて';
+          },
+          formatAllSelected: function() {
+              return '全て選択されています';
+          },
+          styler: function(row) {
+              return 'max-width: 150px'
+          }
+      });
+  });
+  </script>

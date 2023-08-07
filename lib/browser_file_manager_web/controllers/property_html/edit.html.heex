@@ -1,0 +1,8 @@
+<.header>
+  Edit Property <%= @property.id %>
+  <:subtitle>Use this form to manage property records in your database.</:subtitle>
+</.header>
+
+<.property_form changeset={@changeset} action={~p"/properties/#{@property}"} />
+
+<.back navigate={~p"/properties"}>Back to properties</.back>

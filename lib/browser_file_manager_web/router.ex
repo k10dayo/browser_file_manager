@@ -24,6 +24,10 @@ defmodule BrowserFileManagerWeb.Router do
     live "/image_view", ImageView
     live "/live", ManagerLive, :index
     live "/live/new", ManagerLive, :new
+
+    resources "/properties", PropertyController
+    resources "/tags", TagController
+    resources "/files", FileController
   end
 
   # Other scopes may use custom stacks.
