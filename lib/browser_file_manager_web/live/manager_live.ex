@@ -2,18 +2,31 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   use BrowserFileManagerWeb, :live_view
 
   alias BrowserFileManagerWeb.DataShape
+  alias BrowserFileManager.Content
 
   alias Phoenix.LiveView.JS
 
   def mount(params, _session, socket) do
     IO.puts "マウント"
+
+    path = ( if params["path"] != nil, do: params["path"], else: "" )
     xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
+    file_list = DataShape.get_list(path)
+    parent_path = DataShape.get_parent_path(path)
+    current_file_id = Content.get_current_id_entry(path)
+    IO.puts current_file_id
+
     socket = socket
+    |> assign(:path, path)
     |> assign(:xampp_http_ip, xampp_http_ip)
     |> assign(:live_action, :index)
+    |> assign(:file_list, file_list)
+    |> assign(:parent_path, parent_path)
     |> assign(:manager_menu_status, "")
     |> assign(:side_menu_status, "")
+    |> assign(:currnet_file_id, current_file_id)
     |> assign(:selected, %{img: "/images/folder.png", name: "/"})
+
     {:ok, socket, layout: false}
   end
 
@@ -26,28 +39,29 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
   defp apply_action(socket, :index, params) do
     IO.puts "アプライアクション:index"
-    path = ( if params["path"] != nil, do: params["path"], else: "" )
-    file_list = DataShape.get_list(path)
-    parent_path = DataShape.get_parent_path(path)
     socket
-    |> assign(:path, path)
-    |> assign(:file_list, file_list)
-    |> assign(:parent_path, parent_path)
-    |> assign(:live_action, :index)
   end
 
   defp apply_action(socket, :new, _params) do
+    IO.puts "アプライアクション:new"
     socket
   end
 
   def handle_event("change", %{"path" => path}, socket) do
     IO.puts "ハンドルイベント:change"
+
     file_list = DataShape.get_list(path)
+    IO.puts inspect file_list
     parent_path = DataShape.get_parent_path(path)
+
+    current_file_id = Content.get_current_id_entry(path)
+    IO.puts current_file_id
+
     socket = socket
     |> assign(:file_list, file_list)
     |> assign(:parent_path, parent_path)
     |> assign(:path, path)
+    |> assign(:current_file_id, current_file_id)
     {:noreply, socket}
   end
 

@@ -15,7 +15,6 @@
 
                 <%= if s.file_category == "d" do %>
                     <div class="item_data m-3 w-[100px]">
-                        <!--<.link patch={~p"/live?path=#{s.file_path}"}>-->
                         <div phx-click="change" phx-value-path={"#{s.file_path}"} id={"#{s.file_name}"} phx-hook="ChangeUrl">
                             <div class="w-full h-[100px] bg-gray-300 ">
                                 <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">

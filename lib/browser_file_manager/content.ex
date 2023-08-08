@@ -256,9 +256,47 @@ defmodule BrowserFileManager.Content do
   absolute_path
   end
 
-  def get_children() do
-    Repo.all(from u in File, where: is_nil u.parent_id)
-    |> Repo.preload(:tags)
-    # Repo.all(File)
+  def get_children_files(path) do
+    IO.puts path
+    hello = if path == "" do
+      Repo.all(from u in File, where: is_nil u.parent_id)
+      |> Repo.preload(:tags)
+    else
+      String.split(path, "/")
+      |> Enum.filter(fn s -> s != "" end)
+    end
+    IO.puts inspect hello
   end
+
+  def get_current_id_entry(path)do
+    list = String.split(path, "/")
+    |> Enum.filter(fn s -> s != "" end)
+
+    if Enum.count(list) != 0 do
+      get_current_id(list, nil)
+    end
+  end
+  def get_current_id([last], parent_id) do
+    if parent_id == nil do
+      Repo.one(from u in File, select: u.id, where: is_nil(u.parent_id), where: u.name == ^last)
+    else
+      Repo.one(from u in File, select: u.id, where: u.parent_id == ^parent_id, where: u.name == ^last)
+    end
+  end
+  def get_current_id([head | tail], parent_id) do
+    if parent_id == nil do
+      id = Repo.one(from u in File, select: u.id, where: is_nil(u.parent_id), where: u.name == ^head)
+      if id == nil do
+      else
+        get_current_id(tail, id)
+      end
+    else
+      id = Repo.one(from u in File, select: u.id, where: u.parent_id == ^parent_id, where: u.name == ^head)
+      if id == nil do
+      else
+        get_current_id(tail, id)
+      end
+    end
+  end
+
 end

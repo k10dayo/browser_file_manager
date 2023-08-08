@@ -9,7 +9,7 @@ defmodule BrowserFileManagerWeb.DataShape do
   def get_list(path) do
     IO.puts "ゲットリスト()"
     IO.puts "受け取ったパス: " <> path
-    IO.puts inspect Content.get_children()
+    # Content.get_children_files(path)
 
     #フルパスの取得
     root_path = Application.fetch_env!(:browser_file_manager, :root)
@@ -52,10 +52,6 @@ defmodule BrowserFileManagerWeb.DataShape do
     end)
 
     ls_data
-  end
-
-  def get_children(path) do
-    IO.puts "hello"
   end
 
   # lsコマンドの結果を受け取り、フォルダ名とファイル名のリストにして返す
