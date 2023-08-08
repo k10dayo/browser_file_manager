@@ -4,9 +4,7 @@
 
         <div class="w-full h-[50px] flex justify-between">
             <div>
-                <.link patch={~p"/live?path=#{@parent_path}"} >
-                    <div class="w-[50px] h-[50px] bg-[url(/images/back_button.png)] bg-center bg-contain bg-no-repeat"></div>
-                </.link>
+                <div phx-click="change" phx-value-path={"#{@parent_path}"} class="w-[50px] h-[50px] bg-[url(/images/back_button.png)] bg-center bg-contain bg-no-repeat"></div>
             </div>
             <div><%= inspect @path %></div>
             <div class="w-[50px] h-[50px] bg-gray-100"></div>
