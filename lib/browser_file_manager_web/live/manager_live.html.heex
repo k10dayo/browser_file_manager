@@ -4,7 +4,7 @@
 
         <div class="w-full h-[50px] flex justify-between">
             <div>
-                <div phx-click="change" phx-value-path={"#{@parent_path}"} class="w-[50px] h-[50px] bg-[url(/images/back_button.png)] bg-center bg-contain bg-no-repeat"></div>
+                <div phx-click="change" phx-value-path={"#{@parent_path}"} class="w-[50px] h-[50px] bg-[url(/images/back_button.png)] bg-center bg-contain bg-no-repeat" id="back_button" phx-hook="ChangeUrl"></div>
             </div>
             <div><%= inspect @path %></div>
             <div class="w-[50px] h-[50px] bg-gray-100"></div>
@@ -16,7 +16,7 @@
                 <%= if s.file_category == "d" do %>
                     <div class="item_data m-3 w-[100px]">
                         <!--<.link patch={~p"/live?path=#{s.file_path}"}>-->
-                        <div phx-click="change" phx-value-path={"#{s.file_path}"}>
+                        <div phx-click="change" phx-value-path={"#{s.file_path}"} id={"#{s.file_name}"} phx-hook="ChangeUrl">
                             <div class="w-full h-[100px] bg-gray-300 ">
                                 <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">
                             </div>
@@ -103,7 +103,6 @@
         </div>
     </nav>
 </div>
-<!-- <div id={"#{s.file_name}"} phx-hook="ItemInfoClick"></div>-->
 
 <.modal :if={@live_action in [:new, :edit]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
     <.live_component
