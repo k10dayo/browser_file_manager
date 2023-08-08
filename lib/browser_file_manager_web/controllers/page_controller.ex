@@ -1,6 +1,5 @@
 defmodule BrowserFileManagerWeb.PageController do
   use BrowserFileManagerWeb, :controller
-  alias BrowserFileManagerWeb.PageHTML
   alias BrowserFileManagerWeb.DataShape
 
   def home(conn, _params) do
@@ -11,7 +10,7 @@ defmodule BrowserFileManagerWeb.PageController do
 
   def manager(conn, prams) do
     path = ( if prams["path"] != nil, do: prams["path"], else: "" )
-    file_list = PageHTML.get_list(path)
+    file_list = DataShape.get_list(path)
     parent_path = DataShape.get_parent_path(path)
     xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
     render(conn, :manager, layout: false,

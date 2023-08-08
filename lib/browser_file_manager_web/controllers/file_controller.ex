@@ -32,8 +32,9 @@ defmodule BrowserFileManagerWeb.FileController do
   end
 
   def show(conn, %{"id" => id}) do
+    absolute_path = Content.get_absolute_path(id)
     file = Content.get_file!(id)
-    render(conn, :show, file: file)
+    render(conn, :show, file: file, absolute_path: absolute_path)
   end
 
   def edit(conn, %{"id" => id}) do

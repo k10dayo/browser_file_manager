@@ -1,7 +1,7 @@
 const HamburgerClick ={
     mounted(){
         this.el.addEventListener("click", e => {
-            console.log("うわああああああああああああああ")
+            console.log("jsイベント　ハンバーガーメニュー")
             manager_menu = document.querySelector("#manager_menu")
             side_menu = document.querySelector("#side_menu")
             console.log(manager_menu)

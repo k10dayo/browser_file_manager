@@ -1,5 +1,7 @@
 <.header>
   File <%= @file.id %>
+  <br>
+  <%= @absolute_path %>
   <:subtitle>This is a file record from your database.</:subtitle>
   <:actions>
     <.link href={~p"/files/#{@file}/edit"}>

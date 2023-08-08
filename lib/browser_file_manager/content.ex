@@ -226,4 +226,39 @@ defmodule BrowserFileManager.Content do
   def list_tags_by_id(tag_ids) do
     Repo.all(from c in Tag, where: c.id in ^tag_ids)
   end
+
+  #絶対パスを取得してくる
+  def get_absolute_path(id) do
+    id = String.to_integer(id)
+    sql ="
+      WITH RECURSIVE connected_files AS (
+      SELECT id, name, parent_id
+      FROM files
+      WHERE id = $1
+
+      UNION ALL
+
+      SELECT p.id, p.name, p.parent_id
+      FROM files p
+      JOIN connected_files c ON p.id = c.parent_id
+    )
+    SELECT *
+    FROM connected_files;
+  "
+  {:ok, result} = Ecto.Adapters.SQL.query(BrowserFileManager.Repo, sql, [id])
+  IO.puts inspect result.columns
+  rows = Enum.reverse(result.rows)
+  IO.puts inspect rows
+  absolute_path = Enum.map(rows, fn s -> Enum.at(s, 1) end)
+  |> List.insert_at(0, "")
+  |> Enum.join("/")
+  IO.puts inspect absolute_path
+  absolute_path
+  end
+
+  def get_children() do
+    Repo.all(from u in File, where: is_nil u.parent_id)
+    |> Repo.preload(:tags)
+    # Repo.all(File)
+  end
 end

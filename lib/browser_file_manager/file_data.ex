@@ -1,5 +1,6 @@
 defmodule BrowserFileManager.FileData do
-  defstruct file_category: "-",
-            file_name: "-",
-            file_path: "-"
+  defstruct file_category: nil,
+            file_name: nil,
+            file_path: nil,
+            file_db: nil
 end
