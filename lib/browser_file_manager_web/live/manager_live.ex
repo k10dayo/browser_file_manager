@@ -29,10 +29,10 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:live_action, :index)
     |> assign(:file_list, file_list)
     |> assign(:parent_path, parent_path)
-    |> assign(:manager_menu_status, "")
-    |> assign(:side_menu_status, "")
+    |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
     |> assign(:currnet_file_id, current_file_id)
     |> assign(:selected, %{img: "/images/folder.png", name: "/"})
+    |> assign(:flex, %{status: :row, hidden: "hidden", file_width: "w-[100px]"})
 
     {:ok, socket, layout: false}
   end
@@ -76,24 +76,32 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   end
 
   def handle_event("hamburger", _, socket) do
-    manager_menu_status = if socket.assigns.manager_menu_status != "" do
-      ""
+    hamburger = socket.assigns.hamburger
+    hamburger = if hamburger.status do
+      %{hamburger | status: false, manager_menu: "", side_menu: ""}
     else
-      "action_manager_menu"
-    end
-    side_menu_status = if socket.assigns.side_menu_status != "" do
-      ""
-    else
-      "action_side_menu"
+      %{hamburger | status: true, manager_menu: "action_manager_menu", side_menu: "action_side_menu"}
     end
     socket = socket
-    |> assign(:manager_menu_status, manager_menu_status)
-    |> assign(:side_menu_status, side_menu_status)
+    |> assign(:hamburger, hamburger)
     {:noreply, socket}
   end
 
   def handle_event("selected_file", params, socket) do
     IO.puts inspect params
+    {:noreply, socket}
+  end
+
+  def handle_event("flex", _params, socket) do
+    flex = socket.assigns.flex
+    IO.puts inspect flex
+    flex = if flex.status == :row do
+      %{flex| status: :column, hidden: "", file_width: "w-full"}
+    else
+      %{flex| status: :row, hidden: "hidden", file_width: "w-[100px]"}
+    end
+    socket = socket
+    |> assign(:flex, flex)
     {:noreply, socket}
   end
 end

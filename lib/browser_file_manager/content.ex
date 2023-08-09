@@ -247,7 +247,7 @@ defmodule BrowserFileManager.Content do
   "
   {:ok, result} = Ecto.Adapters.SQL.query(BrowserFileManager.Repo, sql, [id])
   rows = Enum.reverse(result.rows)
-  IO.puts inspect result.columins
+  IO.puts inspect result.columns
   IO.puts inspect rows
   absolute_path = Enum.map(rows, fn s -> Enum.at(s, 1) end)
   |> List.insert_at(0, "")
