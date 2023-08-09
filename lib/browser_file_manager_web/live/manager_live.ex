@@ -11,14 +11,16 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
     path = ( if params["path"] != nil, do: params["path"], else: "" )
     xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
-    file_list = DataShape.get_list(path)
+    tmp_file_list = DataShape.get_list(path)
     parent_path = DataShape.get_parent_path(path)
+    #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
     current_file_id = Content.get_current_id_entry(path)
     db_children_files = Content.get_db_children_files(path, current_file_id)
     # IO.puts inspect file_list
     # IO.puts inspect db_children_files
     IO.puts "カレントファイルID:" <> inspect current_file_id
-    IO.puts inspect DataShape.zip_ls_db(file_list, db_children_files)
+    file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    IO.puts inspect file_list
 
 
     socket = socket
@@ -55,12 +57,15 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   def handle_event("change", %{"path" => path}, socket) do
     IO.puts "ハンドルイベント:change"
 
-    file_list = DataShape.get_list(path)
-    IO.puts inspect file_list
+    tmp_file_list = DataShape.get_list(path)
     parent_path = DataShape.get_parent_path(path)
 
     current_file_id = Content.get_current_id_entry(path)
     IO.puts current_file_id
+    db_children_files = Content.get_db_children_files(path, current_file_id)
+
+    file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    IO.puts inspect file_list
 
     socket = socket
     |> assign(:file_list, file_list)
