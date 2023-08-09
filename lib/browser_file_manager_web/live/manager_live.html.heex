@@ -8,7 +8,7 @@
             </div>
             <div><%= inspect @path %></div>
             <div class="flex">
-                <div class="w-[50px] h-[50px] bg-red-300" phx-click="flex"></div>
+                <div class="w-[50px] h-[50px] bg-red-300 rounded-lg bg-[url(/images/sort.png)] bg-center bg-contain bg-no-repeat" phx-click="flex"></div>
                 <div class="w-[50px] h-[50px] bg-gray-100"></div>
             </div>
         </div>
@@ -31,10 +31,17 @@
                             </div>
                         </div>
                         <div class={"#{@flex.hidden}"}>
-                            <div>
-                                <% tags = if s.file_db !=nil, do: s.file_db.tags, else: [] %>
-                                <%= for tag <- tags do%>
-                                    <div class="bg-red-300 rounded-lg"><%= tag.name %></div>
+                            <div class="flex">
+                                <% groups = if s.group_tags !=nil, do: s.group_tags, else: [] %>
+                                <%= for g <- groups do%>
+                                    <div>
+                                        <div class="">[<%= g.p_name %>]</div>
+                                        <div>
+                                            <%= for t <- g.tags do %>
+                                                <div class="bg-red-300 rounded-lg"><%= t.name %></div>
+                                            <% end %>
+                                        </div>
+                                    </div>
                                 <% end %>
                             </div>
                         </div>
@@ -108,14 +115,13 @@
                 <img id="side_menu_image" src="/images/folder.png" class="object-contain w-full h-full" >
             </div>
             <div class="w-full h-[70%] bg-green-300">
-                <div id="side_menu_name"><%= @path %></div>
-                <div><%= @selected.img %></div>
-                <div><%= @selected.name %></div>
-
-
                 <.link patch={~p"/live/new"}>
                     <.button>New Tag</.button>
                 </.link>
+
+                <div id="side_menu_name"><%= @path %></div>
+                <div><%= @selected.img %></div>
+                <div><%= @selected.name %></div>
 
             </div>
         </div>

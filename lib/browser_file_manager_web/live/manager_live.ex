@@ -20,8 +20,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     # IO.puts inspect db_children_files
     IO.puts "カレントファイルID:" <> inspect current_file_id
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
-    IO.puts inspect file_list
-
+    file_list = DataShape.grouping_tags(file_list)
 
     socket = socket
     |> assign(:path, path)

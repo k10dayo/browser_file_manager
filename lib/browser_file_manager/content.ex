@@ -293,13 +293,21 @@ defmodule BrowserFileManager.Content do
   def get_db_children_files(path, current_file_id) do
     #パスが""の場合はルートを検索
     if path == "" do
-      Repo.all(from u in File, where: is_nil u.parent_id)
+      db_files = Repo.all(from u in File, where: is_nil u.parent_id)
       |> Repo.preload(:tags)
+      Enum.map(db_files, fn db_file ->
+        tags = db_file.tags |> Repo.preload(:property)
+        %File{db_file | tags: tags}
+      end)
     else
       #current_file_idを持ってる場合は検索
       if current_file_id != nil do
-        Repo.all(from u in File, where: u.parent_id == ^current_file_id)
+        db_files = Repo.all(from u in File, where: u.parent_id == ^current_file_id)
         |> Repo.preload(:tags)
+        Enum.map(db_files, fn db_file ->
+          tags = db_file.tags |> Repo.preload(:property)
+          %File{db_file | tags: tags}
+        end)
       else
         []
       end

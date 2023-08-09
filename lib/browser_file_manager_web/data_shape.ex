@@ -104,6 +104,7 @@ defmodule BrowserFileManagerWeb.DataShape do
     end
   end
 
+  #無駄な比較？が多かったのでボツ
   #lsしたlistと、DBから取ってきたlistを名前が一致するもので、まとめる
   # def zip_ls_db(file_list, db_children_files) do
   #   Enum.map(file_list, fn file ->
@@ -112,6 +113,7 @@ defmodule BrowserFileManagerWeb.DataShape do
   #   end)
   # end
 
+  #lsしたlistと、DBから取ってきたlistを名前が一致するもので、まとめる
   def zip_ls_db(file_list, []) do
     file_list
   end
@@ -132,5 +134,27 @@ defmodule BrowserFileManagerWeb.DataShape do
     end
     zip_ls_db(file_list, db_file_tail)
   end
+
+  #ファイルが持っているタグをプロパティでまとめて、そのファイルのgroup_tagsにぶちこむ
+  def grouping_tags(file_list) do
+    IO.puts "グルーピング"
+    Enum.map(file_list, fn file ->
+      group_tags = if file.file_db != nil do
+        groups = Enum.map(file.file_db.tags, fn tag -> if tag.property != nil, do: %{p_id: tag.property_id, p_name: tag.property.name, tags: nil}, else: %{p_id: nil, p_name: nil, tags: nil} end)
+        groups = Enum.uniq(groups)
+        tags = file.file_db.tags
+
+        Enum.map(groups, fn  group ->
+          tmp = Enum.filter(tags, fn tag -> tag.property_id == group.p_id end)
+          tmp = Enum.map(tmp, fn s -> %{id: s.id, name: s.name, p_id: s.property_id} end)
+          %{group | tags: tmp}
+        end)
+      else
+        nil
+      end
+      %FileData{file | group_tags: group_tags}
+    end)
+  end
+
 
 end
