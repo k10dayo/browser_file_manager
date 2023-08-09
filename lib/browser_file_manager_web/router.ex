@@ -19,11 +19,10 @@ defmodule BrowserFileManagerWeb.Router do
 
     get "/", PageController, :home
 
-    get "/manager", PageController, :manager
-
-    live "/image_view", ImageView
     live "/live", ManagerLive, :index
     live "/live/new", ManagerLive, :new
+
+    live "/image_view", ImageView
 
     resources "/properties", PropertyController
     resources "/tags", TagController

@@ -246,8 +246,8 @@ defmodule BrowserFileManager.Content do
     FROM connected_files;
   "
   {:ok, result} = Ecto.Adapters.SQL.query(BrowserFileManager.Repo, sql, [id])
-  IO.puts inspect result.columns
   rows = Enum.reverse(result.rows)
+  IO.puts inspect result.columins
   IO.puts inspect rows
   absolute_path = Enum.map(rows, fn s -> Enum.at(s, 1) end)
   |> List.insert_at(0, "")
@@ -256,22 +256,12 @@ defmodule BrowserFileManager.Content do
   absolute_path
   end
 
-  def get_children_files(path) do
-    IO.puts path
-    hello = if path == "" do
-      Repo.all(from u in File, where: is_nil u.parent_id)
-      |> Repo.preload(:tags)
-    else
-      String.split(path, "/")
-      |> Enum.filter(fn s -> s != "" end)
-    end
-    IO.puts inspect hello
-  end
-
+  #カレントフォルダーのDBのIDを取得する
   def get_current_id_entry(path)do
     list = String.split(path, "/")
     |> Enum.filter(fn s -> s != "" end)
 
+    #リストが0じゃないとき　すなわちルートじゃないとき
     if Enum.count(list) != 0 do
       get_current_id(list, nil)
     end
@@ -295,6 +285,23 @@ defmodule BrowserFileManager.Content do
       if id == nil do
       else
         get_current_id(tail, id)
+      end
+    end
+  end
+
+  #そのフォルダが持ってるファイルを検索する
+  def get_db_children_files(path, current_file_id) do
+    #パスが""の場合はルートを検索
+    if path == "" do
+      Repo.all(from u in File, where: is_nil u.parent_id)
+      |> Repo.preload(:tags)
+    else
+      #current_file_idを持ってる場合は検索
+      if current_file_id != nil do
+        Repo.all(from u in File, where: u.parent_id == ^current_file_id)
+        |> Repo.preload(:tags)
+      else
+        []
       end
     end
   end

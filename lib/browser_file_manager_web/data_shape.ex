@@ -1,15 +1,13 @@
 defmodule BrowserFileManagerWeb.DataShape do
   alias BrowserFileManagerWeb.DataShape
   alias BrowserFileManager.Content
+  alias BrowserFileManager.Content.File
   # 共通で使うデータを整える関数をここに記述していく
 
   alias BrowserFileManager.FileData
 
   # pathを受け取ると、そのpathのフォルダ内のファイルを%FileData{}のリストにして返す
   def get_list(path) do
-    IO.puts "ゲットリスト()"
-    IO.puts "受け取ったパス: " <> path
-    # Content.get_children_files(path)
 
     #フルパスの取得
     root_path = Application.fetch_env!(:browser_file_manager, :root)
@@ -104,6 +102,35 @@ defmodule BrowserFileManagerWeb.DataShape do
     def remove_last_element([head | tail]) do
       [head | remove_last_element(tail)]
     end
+  end
+
+  #lsしたlistと、DBから取ってきたlistを名前が一致するもので、まとめる
+  # def zip_ls_db(file_list, db_children_files) do
+  #   Enum.map(file_list, fn file ->
+  #     db_file = Enum.find(db_children_files, fn db_file -> db_file.name == file.file_name end)
+  #     file = %FileData{file | file_db: db_file}
+  #   end)
+  # end
+
+  def zip_ls_db(file_list, []) do
+    file_list
+  end
+  def zip_ls_db(file_list, [db_file_last]) do
+    index = Enum.find_index(file_list, fn file -> file.file_name == db_file_last.name end)
+    file_list = if index != nil do
+      List.update_at(file_list, index, &(%FileData{&1 | file_db: db_file_last}))
+    else
+      file_list
+    end
+  end
+  def zip_ls_db(file_list, [db_file_head | db_file_tail]) do
+    index = Enum.find_index(file_list, fn file -> file.file_name == db_file_head.name end)
+    file_list = if index != nil do
+      List.update_at(file_list, index, &(%FileData{&1 | file_db: db_file_head}))
+    else
+      file_list
+    end
+    zip_ls_db(file_list, db_file_tail)
   end
 
 end

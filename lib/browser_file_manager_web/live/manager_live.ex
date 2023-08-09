@@ -14,7 +14,12 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     file_list = DataShape.get_list(path)
     parent_path = DataShape.get_parent_path(path)
     current_file_id = Content.get_current_id_entry(path)
-    IO.puts current_file_id
+    db_children_files = Content.get_db_children_files(path, current_file_id)
+    # IO.puts inspect file_list
+    # IO.puts inspect db_children_files
+    IO.puts "カレントファイルID:" <> inspect current_file_id
+    IO.puts inspect DataShape.zip_ls_db(file_list, db_children_files)
+
 
     socket = socket
     |> assign(:path, path)
