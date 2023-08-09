@@ -64,7 +64,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     db_children_files = Content.get_db_children_files(path, current_file_id)
 
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
-    IO.puts inspect file_list
+    file_list = DataShape.grouping_tags(file_list)
 
     socket = socket
     |> assign(:file_list, file_list)
