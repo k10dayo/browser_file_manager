@@ -1,0 +1,25 @@
+<div class="w-screen h-screen bg-gray-500 flex justify-center relative">
+    <!-- 拡張子が画像のときと動画のときの分岐 -->
+    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["png", "jpg", "jpeg", "webp"] do %>
+        <img src={"#{@content_path}"} class="object-contain">
+
+        <!-- 左右のボタン --->
+        <div class="absolute left-0 bg-red-100 h-full w-[20%] flex opacity-5" phx-click="left">
+            <.link href={~p"/live?path=#{@parent_path}"}>
+                <img src="/images/back_button.png" class="absolute object-contain w-[50px] h-[50px]">
+            </.link>
+            <img src="/images/left_arrow.png" class="m-auto">
+        </div>
+        <div class="absolute right-0 bg-blue-100 h-full w-[20%] flex opacity-5" phx-click="right"><img src="/images/right_arrow.png" class="m-auto"></div>
+    <% end %>
+    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["mp4"] do %>
+            <video src={"#{@content_path}"} autoplay controls></video>
+
+            <div class="absolute left-0 w-[50px] h-[50px]">
+                <.link href={~p"/live?path=#{@parent_path}"}>
+                    <img src="/images/back_button.png" class="absolute object-contain w-[50px] h-[50px]">
+                </.link>
+            </div>
+    <% end %>
+
+</div>

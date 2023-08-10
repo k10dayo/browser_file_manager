@@ -1,0 +1,24 @@
+<.header>
+  File <%= @file.id %>
+  <br>
+  <%= @absolute_path %>
+  <:subtitle>This is a file record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/files/#{@file}/edit"}>
+      <.button>Edit file</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @file.name %></:item>
+  <:item title="Star"><%= @file.star %></:item>
+  <:item title="Parent"><%= @file.parent_id %></:item>
+  <:item title="Tags">
+    <%= for tag <- @file.tags do%>
+      <div><%= tag.name %></div>
+    <% end %>
+  </:item>
+</.list>
+
+<.back navigate={~p"/files"}>Back to files</.back>

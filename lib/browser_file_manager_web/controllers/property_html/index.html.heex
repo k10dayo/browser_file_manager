@@ -1,0 +1,33 @@
+<.link href={~p"/properties"}>
+  <.button>properties</.button>
+</.link>
+<.link href={~p"/tags"}>
+  <.button>tags</.button>
+</.link>
+<.link href={~p"/files"}>
+  <.button>files</.button>
+</.link>
+
+<.header>
+  Listing Properties
+  <:actions>
+    <.link href={~p"/properties/new"}>
+      <.button>New Property</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="properties" rows={@properties} row_click={&JS.navigate(~p"/properties/#{&1}")}>
+  <:col :let={property} label="Name"><%= property.name %></:col>
+  <:action :let={property}>
+    <div class="sr-only">
+      <.link navigate={~p"/properties/#{property}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/properties/#{property}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={property}>
+    <.link href={~p"/properties/#{property}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

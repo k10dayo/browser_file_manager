@@ -1,0 +1,16 @@
+<.header>
+  Tag <%= @tag.id %>
+  <:subtitle>This is a tag record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/tags/#{@tag}/edit"}>
+      <.button>Edit tag</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<% tag_property = if @tag.property != nil, do: @tag.property.name, else: "" %>
+<.list>
+  <:item title="Name"><%= @tag.name %></:item>
+  <:item title="Property"><%= tag_property %></:item>
+</.list>
+<.back navigate={~p"/tags"}>Back to tags</.back>

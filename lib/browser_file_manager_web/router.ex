@@ -18,6 +18,15 @@ defmodule BrowserFileManagerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/live", ManagerLive, :index
+    live "/live/new", ManagerLive, :new
+
+    live "/image_view", ImageView
+
+    resources "/properties", PropertyController
+    resources "/tags", TagController
+    resources "/files", FileController
   end
 
   # Other scopes may use custom stacks.
