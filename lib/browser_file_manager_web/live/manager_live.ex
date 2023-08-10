@@ -31,7 +31,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
     |> assign(:currnet_file_id, current_file_id)
     |> assign(:selected, %{img: "/images/folder.png", name: "/"})
-    |> assign(:flex, %{status: :row, hidden: "hidden", file_width: "w-[100px]"})
+    |> assign(:detail, %{status: :row, detail_off: "", detail_on: "hidden", file_width: "w-[100px]"})
 
     {:ok, socket, layout: false}
   end
@@ -91,16 +91,16 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     {:noreply, socket}
   end
 
-  def handle_event("flex", _params, socket) do
-    flex = socket.assigns.flex
-    IO.puts inspect flex
-    flex = if flex.status == :row do
-      %{flex| status: :column, hidden: "", file_width: "w-full"}
+  def handle_event("detail", _params, socket) do
+    detail = socket.assigns.detail
+    IO.puts inspect detail
+    detail = if detail.status == :row do
+      %{detail| status: :column, detail_off: "hidden", detail_on: "", file_width: "w-full"}
     else
-      %{flex| status: :row, hidden: "hidden", file_width: "w-[100px]"}
+      %{detail| status: :row, detail_off: "", detail_on: "hidden", file_width: "w-[100px]"}
     end
     socket = socket
-    |> assign(:flex, flex)
+    |> assign(:detail, detail)
     {:noreply, socket}
   end
 end
