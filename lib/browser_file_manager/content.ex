@@ -314,4 +314,16 @@ defmodule BrowserFileManager.Content do
     end
   end
 
+  #そのフォルダ自身をdbで検索する
+  def get_db_file(selected_id) do
+    if selected_id != nil do
+      db_file = Repo.one(from u in File, where: u.id == ^selected_id)
+      |> Repo.preload(:tags)
+      tags = db_file.tags |> Repo.preload(:property)
+      %File{db_file | tags: tags}
+    else
+      nil
+    end
+  end
+
 end

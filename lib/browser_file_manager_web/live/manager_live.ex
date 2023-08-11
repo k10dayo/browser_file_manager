@@ -16,11 +16,14 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
     current_file_id = Content.get_current_id_entry(path)
     db_children_files = Content.get_db_children_files(path, current_file_id)
-    # IO.puts inspect file_list
-    # IO.puts inspect db_children_files
     IO.puts "カレントファイルID:" <> inspect current_file_id
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    IO.puts inspect Enum.at file_list, 0
     file_list = DataShape.grouping_tags(file_list)
+
+    db_selected_file = Content.get_db_file(current_file_id)
+    IO.puts inspect db_selected_file
+    #db_selected_file = DataShape.grouping_tags([db_selected_file])
 
     socket = socket
     |> assign(:path, path)
@@ -87,7 +90,8 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   end
 
   def handle_event("selected_file", params, socket) do
-    IO.puts inspect params
+    hello =  params
+    IO.puts inspect hello
     {:noreply, socket}
   end
 

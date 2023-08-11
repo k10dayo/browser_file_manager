@@ -24,6 +24,52 @@
                                     <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </div>
+                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-file_id={"#{file_id}"}>
+                                <div class={"#{@detail.detail_off}"}>
+                                    <!-- <p><%= s.file_category %></p> -->
+                                    <p class="item_name"><%= s.file_name %></p>
+                                    <!-- <p><%= s.file_path %></p> -->
+                                </div>
+                                <div class={"#{@detail.detail_on}"}>
+                                    <div>いいね数</div>
+                                    <div class="text-right"><%= if s.file_db != nil, do: inspect s.file_db.star %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class={"#{@detail.detail_on} w-[calc(100%-124px)] overflow-x-scroll"}>
+                            <div class="m-2"><%= s.file_name %></div>
+                            <div class="flex">
+                                <% groups = if s.group_tags !=nil, do: s.group_tags, else: [] %>
+                                <%= for g <- groups do%>
+                                    <div class="mx-2">
+                                        <div class="" style="word-break: keep-all;">[<%= g.p_name %>]</div>
+                                        <div class="grid grid-flow-col grid-rows-4 gap-1">
+                                            <%= for t <- g.tags do %>
+                                                <div class="bg-red-300 w-fit rounded-lg" style="word-break: keep-all;"><%= t.name %></div>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                <% end %>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+
+                <%= if s.file_category in ["i", "v"] do %>
+                    <div class={"item_data m-3 #{@detail.file_width} flex"}>
+                        <div class="w-[100px]">
+                            <.link href={~p"/image_view?path=#{s.file_path}"}>
+                                <div class="w-full h-[100px] bg-gray-300">
+                                    <% img_path = @xampp_http_ip <> s.file_path %>
+                                    <%= if s.file_category == "i" do %>
+                                        <img src={"#{img_path}"} class="item_image object-contain w-full h-full" loading="lazy">
+                                    <% end %>
+                                    <%= if s.file_category == "v" do %>
+                                        <img src={"/images/video_icon.png"} class="item_image object-contain w-full h-full">
+                                    <% end %>
+                                </div>
+                            </.link>
                             <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file">
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
@@ -55,44 +101,6 @@
                     </div>
                 <% end %>
 
-                <%= if s.file_category == "i" do %>
-                    <div class={"item_data m-3 #{@detail.file_width} flex"}>
-                        <div class="w-[100px]">
-                            <.link href={~p"/image_view?path=#{s.file_path}"}>
-                                <div class="w-full h-[100px] bg-gray-300">
-                                    <% img_path = @xampp_http_ip <> s.file_path %>
-                                    <!-- <div class={" w-full h-full bg-center bg-contain bg-no-repeat "} style={"background-image: url('#{img_path}')"}></div> -->
-                                    <img src={"#{img_path}"} class="item_image object-contain w-full h-full bg-[url('/images/loading.png')] bg-contain bg-center bg-no-repeat" loading="lazy">
-                                </div>
-                            </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden">
-                                <!-- <p><%= s.file_category %></p> -->
-                                <p class="item_name"><%= s.file_name %></p>
-                                <!-- <p><%= s.file_path %></p> -->
-                            </div>
-                        </div>
-                    </div>
-                <% end %>
-
-                <%= if s.file_category == "v" do %>
-                    <div class={"item_data m-3 #{@detail.file_width} flex"}>
-                        <div class="w-[100px]">
-                            <.link href={~p"/image_view?path=#{s.file_path}"}>
-                                <div class="w-full h-[100px]">
-                                    <div class={" w-full h-full bg-gray-300"}>
-                                        <img src={"/images/video_icon.png"} class="item_image object-contain w-full h-full">
-                                    </div>
-                                </div>
-                            </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden">
-                                <!-- <p><%= s.file_category %></p> -->
-                                <p class="item_name"><%= s.file_name %></p>
-                                <!-- <p><%= s.file_path %></p> -->
-                            </div>
-                        </div>
-                    </div>
-                <% end %>
-
                 <%= if s.file_category == "-" do %>
                     <div class={"item_data m-3 #{@detail.file_width} flex"}>
                         <div class="w-[100px]">
@@ -101,10 +109,32 @@
                                     <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden">
-                                <!-- <p><%= s.file_category %></p> -->
-                                <p class="item_name"><%= s.file_name %></p>
-                                <!-- <p><%= s.file_path %></p> -->
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file">
+                                <div class={"#{@detail.detail_off}"}>
+                                    <!-- <p><%= s.file_category %></p> -->
+                                    <p class="item_name"><%= s.file_name %></p>
+                                    <!-- <p><%= s.file_path %></p> -->
+                                </div>
+                                <div class={"#{@detail.detail_on}"}>
+                                    <div>いいね数</div>
+                                    <div class="text-right"><%= if s.file_db != nil, do: inspect s.file_db.star %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class={"#{@detail.detail_on} w-[calc(100%-124px)] overflow-x-scroll"}>
+                            <div class="m-2"><%= s.file_name %></div>
+                            <div class="flex">
+                                <% groups = if s.group_tags !=nil, do: s.group_tags, else: [] %>
+                                <%= for g <- groups do%>
+                                    <div class="mx-2">
+                                        <div class="" style="word-break: keep-all;">[<%= g.p_name %>]</div>
+                                        <div class="grid grid-flow-col grid-rows-4 gap-1">
+                                            <%= for t <- g.tags do %>
+                                                <div class="bg-red-300 w-fit rounded-lg" style="word-break: keep-all;"><%= t.name %></div>
+                                            <% end %>
+                                        </div>
+                                    </div>
+                                <% end %>
                             </div>
                         </div>
                     </div>
