@@ -3,5 +3,6 @@ defmodule BrowserFileManager.FileData do
             file_name: nil,
             file_path: nil,
             file_db: nil,
-            group_tags: nil
+            group_tags: nil,
+            file_img: nil
 end

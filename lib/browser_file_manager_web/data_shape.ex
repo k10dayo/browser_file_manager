@@ -7,7 +7,7 @@ defmodule BrowserFileManagerWeb.DataShape do
   alias BrowserFileManager.FileData
 
   # pathを受け取ると、そのpathのフォルダ内のファイルを%FileData{}のリストにして返す
-  def get_list(path) do
+  def get_file_data_list(path) do
 
     #フルパスの取得
     root_path = Application.fetch_env!(:browser_file_manager, :root)
@@ -20,9 +20,36 @@ defmodule BrowserFileManagerWeb.DataShape do
 
     IO.puts inspect ls_data
 
+    # ファイル名から%FileData{}にする作業
     ls_data = Enum.map(ls_data, fn s ->
+      tmp_file_data = file_name_to_file_data(path, s)
+      file_path = path <> "/" <> tmp_file_data.file_name
+      %FileData{tmp_file_data | file_path: file_path}
+    end)
+  end
+
+  def get_current_folder_data(path, file_name) do
+    if path == "" and file_name == "" do
+      %FileData{file_category: "d", file_name: "", file_img: "/images/folder.png"}
+    else
+      tmp_file_data = file_name_to_file_data(path, file_name)
+      %FileData{tmp_file_data | file_path: path}
+    end
+
+  end
+
+  # lsコマンドの結果を受け取り、フォルダ名とファイル名のリストにして返す
+  def format_ls(ls_result) do
+    formating = ls_result
+    |> elem(0)
+    |> String.split("\n")
+    |> Enum.filter(fn s -> s != "" end)
+  end
+
+  def file_name_to_file_data(path, row_file_name) do
+      xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
       #　文字列の最後の文字を取得する
-      codepoints = String.codepoints(s)
+      codepoints = String.codepoints(row_file_name)
       last_string = Enum.at(codepoints, Enum.count(codepoints)-1)
       #　もし最後の文字が "/" だったら "d" を一緒に返す
       file_category = (
@@ -30,7 +57,7 @@ defmodule BrowserFileManagerWeb.DataShape do
           "d"
         else
           #　文字列を "." でスプリットして、jpg等だったら "i" を一緒に返す　それ以外は "-" を返す
-          dot_split = String.split(s, ".")
+          dot_split = String.split(row_file_name, ".")
           case Enum.at(dot_split, Enum.count(dot_split)-1) do
             n when n in ["jpg", "jpeg", "png", "webp"] -> "i"
             n when n in ["mp4"] -> "v"
@@ -40,24 +67,20 @@ defmodule BrowserFileManagerWeb.DataShape do
       )
       file_name = (
         if last_string == "/" do
-          DataShape.RemoveLastString.remove_last_string(s)
+          DataShape.RemoveLastString.remove_last_string(row_file_name)
         else
-          s
+          row_file_name
         end
       )
-      file_path = path <> "/" <> file_name
-      %FileData{file_category: file_category, file_name: file_name, file_path: file_path}
-    end)
-
-    ls_data
-  end
-
-  # lsコマンドの結果を受け取り、フォルダ名とファイル名のリストにして返す
-  def format_ls(ls_result) do
-    formating = ls_result
-    |> elem(0)
-    |> String.split("\n")
-    |> Enum.filter(fn s -> s != "" end)
+      file_img = (
+        case file_category do
+          "d" -> "/images/folder.png"
+          "i" -> xampp_http_ip <> path <> "/" <> file_name
+          "v" -> "/images/video_icon.png"
+          "-" -> "/images/question_file.png"
+        end
+      )
+      %FileData{file_category: file_category, file_name: file_name, file_img: file_img}
   end
 
   #フォルダ名とファイル名のリストを受け取ると、画像だけのリストにして返す
@@ -101,6 +124,20 @@ defmodule BrowserFileManagerWeb.DataShape do
     def remove_last_element([_]), do: []
     def remove_last_element([head | tail]) do
       [head | remove_last_element(tail)]
+    end
+  end
+
+  def get_last_folder_name(path, category) do
+    if path == "" do
+      path
+    else
+      split_path_list = String.split(path, "/")
+      last_element = List.last(split_path_list)
+      if category == "d" do
+        last_element <> "/"
+      else
+        last_element
+      end
     end
   end
 

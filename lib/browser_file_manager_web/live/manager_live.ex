@@ -11,19 +11,20 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
     path = ( if params["path"] != nil, do: params["path"], else: "" )
     xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
-    tmp_file_list = DataShape.get_list(path)
+    tmp_file_list = DataShape.get_file_data_list(path)
     parent_path = DataShape.get_parent_path(path)
-    #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
-    current_file_id = Content.get_current_id_entry(path)
+    current_file_id = Content.get_current_id_entry(path) #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
     db_children_files = Content.get_db_children_files(path, current_file_id)
     IO.puts "カレントファイルID:" <> inspect current_file_id
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
-    IO.puts inspect Enum.at file_list, 0
     file_list = DataShape.grouping_tags(file_list)
 
+    #カレントフォルダーのデータを作る
+    current_folder_name = DataShape.get_last_folder_name(path, "d")
+    current_folder_data = DataShape.get_current_folder_data(path, current_folder_name)
     db_selected_file = Content.get_db_file(current_file_id)
-    IO.puts inspect db_selected_file
-    #db_selected_file = DataShape.grouping_tags([db_selected_file])
+    zip_current_folder_data = DataShape.zip_ls_db([current_folder_data], db_selected_file)
+    current_folder_data = Enum.at(DataShape.grouping_tags(zip_current_folder_data), 0)
 
     socket = socket
     |> assign(:path, path)
@@ -33,7 +34,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:parent_path, parent_path)
     |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
     |> assign(:currnet_file_id, current_file_id)
-    |> assign(:selected, %{img: "/images/folder.png", name: "/"})
+    |> assign(:selected, current_folder_data)
     |> assign(:detail, %{status: :row, detail_off: "", detail_on: "hidden", file_width: "w-[100px]"})
 
     {:ok, socket, layout: false}
@@ -59,7 +60,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   def handle_event("change", %{"path" => path}, socket) do
     IO.puts "ハンドルイベント:change"
 
-    tmp_file_list = DataShape.get_list(path)
+    tmp_file_list = DataShape.get_file_data_list(path)
     parent_path = DataShape.get_parent_path(path)
 
     current_file_id = Content.get_current_id_entry(path)
@@ -69,11 +70,19 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
     file_list = DataShape.grouping_tags(file_list)
 
+    #カレントフォルダーのデータを作る
+    current_folder_name = DataShape.get_last_folder_name(path, "d")
+    current_folder_data = DataShape.get_current_folder_data(path, current_folder_name)
+    db_selected_file = Content.get_db_file(current_file_id)
+    zip_current_folder_data = DataShape.zip_ls_db([current_folder_data], db_selected_file)
+    current_folder_data = Enum.at(DataShape.grouping_tags(zip_current_folder_data), 0)
+
     socket = socket
     |> assign(:file_list, file_list)
     |> assign(:parent_path, parent_path)
     |> assign(:path, path)
     |> assign(:current_file_id, current_file_id)
+    |> assign(:selected, current_folder_data)
     {:noreply, socket}
   end
 
@@ -90,8 +99,26 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   end
 
   def handle_event("selected_file", params, socket) do
-    hello =  params
-    IO.puts inspect hello
+    IO.puts "ハンドルイベント selected_file"
+    path = socket.assigns.path
+    selected_file_path =  params["selected_file_path"]
+    selected_file_id = params["selected_file_id"]
+    selected_file_category = params["selected_file_category"]
+
+    #選択したフォルダーのデータを作る
+    selected_file_name = DataShape.get_last_folder_name(selected_file_path, selected_file_category)
+
+
+    selected_folder_data = DataShape.get_current_folder_data(path, selected_file_name)
+    IO.puts inspect selected_folder_data.file_img
+    db_selected_file = Content.get_db_file(selected_file_id)
+    zip_selected_file_data = DataShape.zip_ls_db([selected_folder_data], db_selected_file)
+    selected_folder_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
+
+    IO.puts inspect selected_folder_data.file_img
+
+    socket = socket
+    |> assign(:selected, selected_folder_data)
     {:noreply, socket}
   end
 

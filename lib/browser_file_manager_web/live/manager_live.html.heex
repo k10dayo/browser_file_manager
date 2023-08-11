@@ -25,7 +25,7 @@
                                 </div>
                             </div>
                             <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-file_id={"#{file_id}"}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}} phx-value-selected_file_category={"#{s.file_category}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -70,7 +70,8 @@
                                     <% end %>
                                 </div>
                             </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file">
+                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -109,7 +110,8 @@
                                     <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file">
+                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -145,20 +147,43 @@
         </div>
     </div>
 
-    <nav id="side_menu" class={"min-w-[300px] h-screen  bg-red-300 md:static absolute right-[-300px] duration-500 #{@hamburger.side_menu}"}>
+    <nav id="side_menu" class={"min-w-[300px] max-w-[300px] h-screen  bg-red-300 md:static absolute right-[-300px] duration-500 #{@hamburger.side_menu}"}>
         <div class="w-full h-full relative">
             <div id="hamburger_button" phx-click="hamburger" class="w-[50px] h-[50px] bg-red-300 absolute -left-[50px] rounded-xl rounded-r-none bg-[url(/images/hamburger.png)] bg-center bg-contain bg-no-repeat"></div>
             <div class="w-full h-[30%]">
-                <img id="side_menu_image" src="/images/folder.png" class="object-contain w-full h-full" >
+                <img src={"#{@selected.file_img}"} class="object-contain w-full h-full" >
             </div>
-            <div class="w-full h-[70%] bg-green-300">
-                <.link patch={~p"/live/new"}>
-                    <.button>New Tag</.button>
-                </.link>
-
-                <div id="side_menu_name"><%= @path %></div>
-                <div><%= @selected.img %></div>
-                <div><%= @selected.name %></div>
+            <div class="w-full h-[70%] bg-green-300 flex flex-col">
+                <div class="h-[10%] overflow-y-scroll flex">
+                    <div class="m-auto"><%= @selected.file_name %></div>
+                </div>
+                <div class="h-[90%]">
+                    <div class="h-[40px] flex justify-between">
+                        <div class="flex"><div class="font-bold m-auto">[タグ]</div></div>
+                        <%= if @selected.file_db == nil do %>
+                            <.link patch={~p"/live/new"}>
+                                <.button>New Tag</.button>
+                            </.link>
+                        <% else %>
+                            <.link patch={~p"/live/new"}>
+                                <.button>Edit Tag</.button>
+                            </.link>
+                        <% end %>
+                    </div>
+                    <div class="h-[calc(100%-40px)] overflow-y-scroll">
+                        <% groups = if @selected.group_tags !=nil, do: @selected.group_tags, else: [] %>
+                        <%= for g <- groups do%>
+                            <div class="mx-2">
+                                <div class="">[<%= g.p_name %>]</div>
+                                <div class="flex flex-wrap">
+                                    <%= for t <- g.tags do %>
+                                        <div class="bg-red-300 w-fit rounded-lg m-1"><%= t.name %></div>
+                                    <% end %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
 
             </div>
         </div>

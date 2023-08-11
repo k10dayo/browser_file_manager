@@ -291,6 +291,11 @@ defmodule BrowserFileManager.Content do
 
   #そのフォルダが持ってるファイルを検索する
   def get_db_children_files(path, current_file_id) do
+    current_file_id = if current_file_id == "" do
+      nil
+    else
+      current_file_id
+    end
     #パスが""の場合はルートを検索
     if path == "" do
       db_files = Repo.all(from u in File, where: is_nil u.parent_id)
@@ -315,14 +320,21 @@ defmodule BrowserFileManager.Content do
   end
 
   #そのフォルダ自身をdbで検索する
+  #リストのデータと互換性を持たせるため、リストで返す
   def get_db_file(selected_id) do
+    #htmlのvalueにnilを置けないので変換
+    selected_id = if selected_id == "" do
+      nil
+    else
+      selected_id
+    end
     if selected_id != nil do
       db_file = Repo.one(from u in File, where: u.id == ^selected_id)
       |> Repo.preload(:tags)
       tags = db_file.tags |> Repo.preload(:property)
-      %File{db_file | tags: tags}
+      [%File{db_file | tags: tags}]
     else
-      nil
+      []
     end
   end
 
