@@ -157,13 +157,13 @@
                 <div class="h-[90%]">
                     <div class="h-[40px] flex justify-between">
                         <div class="flex"><div class="font-bold m-auto">[タグ]</div></div>
-                        <%= if @selected.file_db == nil do %>
-                            <.link patch={~p"/live/new"}>
-                                <.button>New Tag</.button>
+                        <%= if @selected.file_db.id != nil do %>
+                            <.link patch={~p"/live/#{@selected.file_db.id}/edit"}>
+                                <.button>Edit Tag</.button>
                             </.link>
                         <% else %>
                             <.link patch={~p"/live/new"}>
-                                <.button>Edit Tag</.button>
+                                <.button>New Tag</.button>
                             </.link>
                         <% end %>
                     </div>
@@ -192,9 +192,9 @@
     <.live_component
     module={BrowserFileManagerWeb.FormComponent}
     id={@selected.file_db.id || :new}
-    title={"hello"}
+    title={@page_title}
     action={@live_action}
     file={@selected.file_db}
-    patch={~p"/files"}
+    patch={~p"/live?path=#{@path}"}
     />
 </.modal>

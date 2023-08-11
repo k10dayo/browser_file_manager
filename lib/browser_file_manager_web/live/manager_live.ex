@@ -52,11 +52,19 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   defp apply_action(socket, :index, params) do
     IO.puts "アプライアクション:index"
     socket
+    |> assign(:page_title, "Index File")
+  end
+
+  defp apply_action(socket, :edit, _params) do
+    IO.puts "アプライアクション:edit"
+    socket
+    |> assign(:page_title, "Edit File")
   end
 
   defp apply_action(socket, :new, _params) do
     IO.puts "アプライアクション:new"
     socket
+    |> assign(:page_title, "New File")
   end
 
   def handle_event("change", %{"path" => path}, socket) do
