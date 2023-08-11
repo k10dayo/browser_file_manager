@@ -17,6 +17,8 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     db_children_files = Content.get_db_children_files(path, current_file_id)
     IO.puts "カレントファイルID:" <> inspect current_file_id
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    IO.puts "ああああああああああああああああああああ"
+    IO.puts inspect Enum.at(file_list, 3)
     file_list = DataShape.grouping_tags(file_list)
 
     #カレントフォルダーのデータを作る

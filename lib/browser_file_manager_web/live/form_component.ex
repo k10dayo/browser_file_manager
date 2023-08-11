@@ -11,7 +11,8 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   @impl true
   def render(assigns) do
-    IO.puts "れんだーーーーーーーーーーー"
+    IO.puts "レンダー"
+    IO.puts inspect assigns.id
     ~H"""
     <div>
       レンダー

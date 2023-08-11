@@ -176,7 +176,7 @@ defmodule BrowserFileManagerWeb.DataShape do
   def grouping_tags(file_list) do
     IO.puts "グルーピング"
     Enum.map(file_list, fn file ->
-      group_tags = if file.file_db != nil do
+      group_tags = if file.file_db.id != nil do
         groups = Enum.map(file.file_db.tags, fn tag -> if tag.property != nil, do: %{p_id: tag.property_id, p_name: tag.property.name, tags: nil}, else: %{p_id: nil, p_name: nil, tags: nil} end)
         groups = Enum.uniq(groups)
         tags = file.file_db.tags

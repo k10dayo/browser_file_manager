@@ -24,8 +24,7 @@
                                     <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </div>
-                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}} phx-value-selected_file_category={"#{s.file_category}"}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}} phx-value-selected_file_category={"#{s.file_category}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -33,7 +32,7 @@
                                 </div>
                                 <div class={"#{@detail.detail_on}"}>
                                     <div>いいね数</div>
-                                    <div class="text-right"><%= if s.file_db != nil, do: inspect s.file_db.star %></div>
+                                    <div class="text-right"><%= s.file_db.star %></div>
                                 </div>
                             </div>
                         </div>
@@ -70,8 +69,7 @@
                                     <% end %>
                                 </div>
                             </.link>
-                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -79,7 +77,7 @@
                                 </div>
                                 <div class={"#{@detail.detail_on}"}>
                                     <div>いいね数</div>
-                                    <div class="text-right"><%= if s.file_db != nil, do: inspect s.file_db.star %></div>
+                                    <div class="text-right"><%= s.file_db.star %></div>
                                 </div>
                             </div>
                         </div>
@@ -110,8 +108,7 @@
                                     <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </.link>
-                            <% file_id = if s.file_db != nil, do: s.file_db.id, else: nil %>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{file_id}"}}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -119,7 +116,7 @@
                                 </div>
                                 <div class={"#{@detail.detail_on}"}>
                                     <div>いいね数</div>
-                                    <div class="text-right"><%= if s.file_db != nil, do: inspect s.file_db.star %></div>
+                                    <div class="text-right"><%= s.file_db.star %></div>
                                 </div>
                             </div>
                         </div>
@@ -183,6 +180,7 @@
                             </div>
                         <% end %>
                     </div>
+                    <%= inspect @selected.file_db %>
                 </div>
 
             </div>
@@ -193,8 +191,10 @@
 <.modal :if={@live_action in [:new, :edit]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
     <.live_component
     module={BrowserFileManagerWeb.FormComponent}
-    id={:new}
+    id={@selected.file_db.id || :new}
+    title={"hello"}
     action={@live_action}
+    file={@selected.file_db}
     patch={~p"/files"}
     />
 </.modal>
