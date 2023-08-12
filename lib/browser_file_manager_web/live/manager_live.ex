@@ -62,7 +62,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     zip_selected_file_data = DataShape.zip_ls_db([selected_file_data], db_selected_file)
     selected_file_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
 
-    IO.puts inspect selected_file_data
+    IO.puts inspect Enum.at(file_list, 4)
 
     socket
     |> assign(:file_list, file_list)

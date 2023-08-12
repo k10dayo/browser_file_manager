@@ -2,10 +2,11 @@ defmodule BrowserFileManagerWeb.FormComponent do
   use BrowserFileManagerWeb, :live_component
 
   alias BrowserFileManager.Content
+  alias BrowserFileManager.Content.File
   alias BrowserFileManager.FileData
 
   alias BrowserFileManagerWeb.FileHTML
-
+  alias Phoenix.LiveView.JS
 
   # def mount(params, session, socket) do
   #   IO.puts "まうんとおおおおおおおおおおおおおお"
@@ -19,7 +20,6 @@ defmodule BrowserFileManagerWeb.FormComponent do
     IO.puts "レンダー"
     ~H"""
     <div>
-      <%= @patch %>
       <.header>
         <%= @title %>
         <:subtitle>Use this form to manage file records in your database.</:subtitle>
@@ -39,7 +39,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
       <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
       <div class="font-bold">Tags</div>
       <div>
-        <select multiple="multiple" name="tags[]"}>
+        <select multiple="multiple" name="tags[]"} id="multiple" phx-hook="MultipleSelect">
           <%= for x <- tag_zip do %>
             <optgroup label={"#{elem(x, 0).name}"}>
               <%= for y <- elem(x, 1) do%>
@@ -58,13 +58,52 @@ defmodule BrowserFileManagerWeb.FormComponent do
           <.button phx-disable-with="Saving...">Save File</.button>
         </:actions>
       </.simple_form>
+
+      <div id="test">わお</div>
+      <script src="/assets/test.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+      <script src="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.js"></script>
+      <script src="/assets/multiple_select.min.js"></script>
+      <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.css">
+
+      <script>
+        $(function () {
+            $('select').multipleSelect({
+                width: 500,
+                isOpen: true,
+                keepOpen: true,
+                multiple: true,
+                filter: true,
+                filterGroup: true,
+                hideOptgroupCheckboxes: true,
+                multipleWidth: "auto",
+                formatSelectAll: function() {
+                    return 'すべて';
+                },
+                formatAllSelected: function() {
+                    return '全て選択されています';
+                },
+                styler: function(row) {
+                    return 'max-width: 150px'
+                }
+            });
+        });
+      </script>
     </div>
+
     """
   end
 
   @impl true
-  def update(%{file: file} = assigns, socket) do
+  def update(assigns, socket) do
     IO.puts "アップデート"
+    %{file: file} = assigns
+    #:newだったら、pathを入れる処理
+    file = if assigns.action == :new do
+      %File{file | name: assigns.file_data.file_path}
+    else
+      file
+    end
     changeset = Content.change_file(file)
 
     {:ok,
