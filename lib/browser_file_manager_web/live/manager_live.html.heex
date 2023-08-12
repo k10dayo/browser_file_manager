@@ -15,7 +15,6 @@
 
         <div class="max-h-[calc(100%-50px)] overflow-y-scroll overflow-x-hidden flex flex-wrap">
             <%= for s <- @file_list do%>
-
                 <%= if s.file_category == "d" do %>
                     <div class={"item_data m-3 #{@detail.file_width} flex"}>
                         <div class="w-[100px]">
@@ -180,7 +179,6 @@
                             </div>
                         <% end %>
                     </div>
-                    <%= inspect @selected.file_db %>
                 </div>
 
             </div>

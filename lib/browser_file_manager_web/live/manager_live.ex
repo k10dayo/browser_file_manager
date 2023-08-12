@@ -11,19 +11,17 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
     path = ( if params["path"] != nil, do: params["path"], else: "" )
     xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
-    tmp_file_list = DataShape.get_file_data_list(path)
+    # tmp_file_list = DataShape.get_file_data_list(path)
     parent_path = DataShape.get_parent_path(path)
     current_file_id = Content.get_current_id_entry(path) #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
-    db_children_files = Content.get_db_children_files(path, current_file_id)
-    IO.puts "カレントファイルID:" <> inspect current_file_id
-    file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
-    IO.puts "ああああああああああああああああああああ"
-    IO.puts inspect Enum.at(file_list, 3)
-    file_list = DataShape.grouping_tags(file_list)
+    # db_children_files = Content.get_db_children_files(path, current_file_id)
+    # IO.puts "カレントファイルID:" <> inspect current_file_id
+    # file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    # file_list = DataShape.grouping_tags(file_list)
 
-    #カレントフォルダーのデータを作る
+    # #カレントフォルダーのデータを作る
     current_folder_name = DataShape.get_last_folder_name(path, "d")
-    current_folder_data = DataShape.get_current_folder_data(path, current_folder_name)
+    current_folder_data = DataShape.get_file_data(path, current_folder_name, true)
     db_selected_file = Content.get_db_file(current_file_id)
     zip_current_folder_data = DataShape.zip_ls_db([current_folder_data], db_selected_file)
     current_folder_data = Enum.at(DataShape.grouping_tags(zip_current_folder_data), 0)
@@ -31,11 +29,11 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     socket = socket
     |> assign(:path, path)
     |> assign(:xampp_http_ip, xampp_http_ip)
-    |> assign(:live_action, :index)
-    |> assign(:file_list, file_list)
+    # |> assign(:file_list, file_list)
     |> assign(:parent_path, parent_path)
-    |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
     |> assign(:currnet_file_id, current_file_id)
+    |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
+    |> assign(:selected_is_current, true)
     |> assign(:selected, current_folder_data)
     |> assign(:detail, %{status: :row, detail_off: "", detail_on: "hidden", file_width: "w-[100px]"})
 
@@ -51,7 +49,33 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
   defp apply_action(socket, :index, params) do
     IO.puts "アプライアクション:index"
-    socket
+    path = ( if params["path"] != nil, do: params["path"], else: "" )
+    # xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
+    tmp_file_list = DataShape.get_file_data_list(path)
+    parent_path = DataShape.get_parent_path(path)
+    current_file_id = Content.get_current_id_entry(path) #currnet_file_id改善の余地あり、　pathで判断しているが、current_file_idで検索するなどしたい
+    db_children_files = Content.get_db_children_files(path, current_file_id)
+    IO.puts "カレントファイルID:" <> inspect current_file_id
+    file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    file_list = DataShape.grouping_tags(file_list)
+
+    #選択中ファイルのデータを作る　更新する
+    selected = socket.assigns.selected
+    selected_file_name = DataShape.get_last_folder_name(selected.file_path, selected.file_category)
+    selected_file_data = DataShape.get_file_data(path, selected_file_name, socket.assigns.selected_is_current)
+    db_selected_file = Content.get_db_file(selected.file_db.id)
+    zip_selected_file_data = DataShape.zip_ls_db([selected_file_data], db_selected_file)
+    selected_file_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
+
+    socket = socket
+    |> assign(:path, path)
+    # |> assign(:xampp_http_ip, xampp_http_ip)
+    |> assign(:file_list, file_list)
+    # |> assign(:parent_path, parent_path)
+    # |> assign(:currnet_file_id, current_file_id)
+    # |> assign(:hamburger, %{status: false, manager_menu: "", side_menu: ""})
+    |> assign(:selected, selected_file_data)
+    # |> assign(:detail, %{status: :row, detail_off: "", detail_on: "hidden", file_width: "w-[100px]"})
     |> assign(:page_title, "Index File")
   end
 
@@ -82,7 +106,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
     #カレントフォルダーのデータを作る
     current_folder_name = DataShape.get_last_folder_name(path, "d")
-    current_folder_data = DataShape.get_current_folder_data(path, current_folder_name)
+    current_folder_data = DataShape.get_file_data(path, current_folder_name, true)
     db_selected_file = Content.get_db_file(current_file_id)
     zip_current_folder_data = DataShape.zip_ls_db([current_folder_data], db_selected_file)
     current_folder_data = Enum.at(DataShape.grouping_tags(zip_current_folder_data), 0)
@@ -92,6 +116,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:parent_path, parent_path)
     |> assign(:path, path)
     |> assign(:current_file_id, current_file_id)
+    |> assign(:selected_is_currnet, true)
     |> assign(:selected, current_folder_data)
     {:noreply, socket}
   end
@@ -118,9 +143,8 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     #選択したフォルダーのデータを作る
     selected_file_name = DataShape.get_last_folder_name(selected_file_path, selected_file_category)
 
-
-    selected_folder_data = DataShape.get_current_folder_data(path, selected_file_name)
-    IO.puts inspect selected_folder_data.file_img
+    selected_folder_data = DataShape.get_file_data(path, selected_file_name, false)
+    IO.puts inspect selected_folder_data.file_path
     db_selected_file = Content.get_db_file(selected_file_id)
     zip_selected_file_data = DataShape.zip_ls_db([selected_folder_data], db_selected_file)
     selected_folder_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
@@ -128,6 +152,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     IO.puts inspect selected_folder_data.file_img
 
     socket = socket
+    |> assign(:selected_id_current, false)
     |> assign(:selected, selected_folder_data)
     {:noreply, socket}
   end

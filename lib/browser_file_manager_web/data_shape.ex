@@ -28,14 +28,22 @@ defmodule BrowserFileManagerWeb.DataShape do
     end)
   end
 
-  def get_current_folder_data(path, file_name) do
+  def get_file_data(path, file_name, selected_is_currnet) do
     if path == "" and file_name == "" do
       %FileData{file_category: "d", file_name: "", file_img: "/images/folder.png"}
     else
       tmp_file_data = file_name_to_file_data(path, file_name)
-      %FileData{tmp_file_data | file_path: path}
+      if selected_is_currnet do
+        #カレントディレクトリのデータを作っていたときの処理
+        IO.puts "あああああああああああああああああああああ"
+        %FileData{tmp_file_data | file_path: path}
+      else
+        #選択したファイルのデータを作っていたときの処理
+        IO.puts "いいいいいいいいいいいいいいいいいいいいいい"
+        file_path = path <> "/" <> tmp_file_data.file_name
+        %FileData{tmp_file_data | file_path: file_path}
+      end
     end
-
   end
 
   # lsコマンドの結果を受け取り、フォルダ名とファイル名のリストにして返す
