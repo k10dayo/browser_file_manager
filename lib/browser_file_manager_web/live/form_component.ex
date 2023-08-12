@@ -2,6 +2,8 @@ defmodule BrowserFileManagerWeb.FormComponent do
   use BrowserFileManagerWeb, :live_component
 
   alias BrowserFileManager.Content
+  alias BrowserFileManager.FileData
+
   alias BrowserFileManagerWeb.FileHTML
 
 
@@ -17,6 +19,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
     IO.puts "レンダー"
     ~H"""
     <div>
+      <%= @patch %>
       <.header>
         <%= @title %>
         <:subtitle>Use this form to manage file records in your database.</:subtitle>
@@ -118,10 +121,11 @@ defmodule BrowserFileManagerWeb.FormComponent do
       {:ok, file} ->
         notify_parent({:saved, file})
 
+        patch = "/live/new/" <> inspect file.id
         {:noreply,
         socket
         |> put_flash(:info, "File created successfully")
-        |> push_patch(to: socket.assigns.patch)}
+        |> push_patch(to: patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

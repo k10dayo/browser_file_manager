@@ -35,11 +35,9 @@ defmodule BrowserFileManagerWeb.DataShape do
       tmp_file_data = file_name_to_file_data(path, file_name)
       if selected_is_currnet do
         #カレントディレクトリのデータを作っていたときの処理
-        IO.puts "あああああああああああああああああああああ"
         %FileData{tmp_file_data | file_path: path}
       else
         #選択したファイルのデータを作っていたときの処理
-        IO.puts "いいいいいいいいいいいいいいいいいいいいいい"
         file_path = path <> "/" <> tmp_file_data.file_name
         %FileData{tmp_file_data | file_path: file_path}
       end
