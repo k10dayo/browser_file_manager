@@ -15,8 +15,10 @@ defmodule BrowserFileManagerWeb.FileController do
   end
 
   def create(conn, params) do
+    IO.puts inspect params
+    #タグをくっつける
     file_params = params["file"]
-    tag_ids = if Map.has_key?(params, "hello"), do: params["hello"], else: []
+    tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
     file_params = Map.put(file_params, "tag_ids", tag_ids)
     IO.puts inspect file_params
 
@@ -47,7 +49,7 @@ defmodule BrowserFileManagerWeb.FileController do
     IO.puts inspect params
     id = params["id"]
     file_params = params["file"]
-    tag_ids = if Map.has_key?(params, "hello"), do: params["hello"], else: []
+    tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
     file_params = Map.put(file_params, "tag_ids", tag_ids)
     IO.puts inspect file_params
 

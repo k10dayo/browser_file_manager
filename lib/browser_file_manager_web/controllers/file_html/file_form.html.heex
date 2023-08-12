@@ -6,11 +6,10 @@
   <.input field={f[:star]} type="number" label="Star" />
   <.input field={f[:parent_id]} type="number" label="Parent" />
 
-
   <% tag_zip = tag_select_origin f, @changeset %>
   <div class="font-bold">Tags</div>
   <div>
-    <select multiple="multiple" name="hello[]"}>
+    <select multiple="multiple" name="tags[]"}>
       <%= for x <- tag_zip do %>
         <optgroup label={"#{elem(x, 0).name}"}>
           <%= for y <- elem(x, 1) do%>
