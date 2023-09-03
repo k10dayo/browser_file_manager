@@ -171,4 +171,9 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:detail, detail)
     {:noreply, socket}
   end
+
+  def handle_event("wowow", _params, socket) do
+    IO.puts ("あああああああああああああああああああああああ")
+    {:noreply, socket}
+  end
 end

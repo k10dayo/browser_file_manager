@@ -8,87 +8,67 @@ defmodule BrowserFileManagerWeb.FormComponent do
   alias BrowserFileManagerWeb.FileHTML
   alias Phoenix.LiveView.JS
 
-  # def mount(params, session, socket) do
-  #   IO.puts "まうんとおおおおおおおおおおおおおお"
-  #   IO.puts inspect session
-  #   IO.puts inspect socket
-  #   {:ok, socket, layout: false}
-  # end
-
   @impl true
   def render(assigns) do
     IO.puts "レンダー"
     ~H"""
-    <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage file records in your database.</:subtitle>
-      </.header>
+    <div class="">
 
-      <.simple_form
-        for={@form}
-        id="file-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-      >
-      <.input field={@form[:name]} type="text" label="Name" />
-      <.input field={@form[:star]} type="number" label="Star" />
-      <.input field={@form[:parent_id]} type="number" label="Parent" />
-
-      <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
-      <div class="font-bold">Tags</div>
-      <div>
-        <select multiple="multiple" name="tags[]"} id="multiple" phx-hook="MultipleSelect">
-          <%= for x <- tag_zip do %>
-            <optgroup label={"#{elem(x, 0).name}"}>
-              <%= for y <- elem(x, 1) do%>
-                <%= if y.selected do%>
-                  <option value={"#{y.value}"} selected="true" ><%= inspect y.key %></option>
-                <% else %>
-                <option value={"#{y.value}"}><%= inspect y.key %></option>
-                <% end %>
-
-              <% end %>
-            </optgroup>
-          <% end %>
-        </select>
+      <div class="h-[10%]">
+        <.header>
+          <span><%= @title %></span>
+          <!--<:subtitle>Use this form to manage file records in your database.</:subtitle>-->
+          <div></div>
+        </.header>
       </div>
-        <:actions>
-          <.button phx-disable-with="Saving...">Save File</.button>
-        </:actions>
-      </.simple_form>
 
-      <div id="test">わお</div>
-      <script src="/assets/test.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-      <script src="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.js"></script>
-      <script src="/assets/multiple_select.min.js"></script>
-      <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.css">
+      <div class="h-[90%]">
+        <.simple_form
+          for={@form}
+          id="file-form"
+          phx-target={@myself}
+          phx-change="validate"
+          phx-submit="save"
+        >
 
-      <script>
-        $(function () {
-            $('select').multipleSelect({
-                width: 500,
-                isOpen: true,
-                keepOpen: true,
-                multiple: true,
-                filter: true,
-                filterGroup: true,
-                hideOptgroupCheckboxes: true,
-                multipleWidth: "auto",
-                formatSelectAll: function() {
-                    return 'すべて';
-                },
-                formatAllSelected: function() {
-                    return '全て選択されています';
-                },
-                styler: function(row) {
-                    return 'max-width: 150px'
-                }
-            });
-        });
-      </script>
+          <div class="h-[10%]">
+            <span class="hidden"><.input field={@form[:name]} type="text" label="Name" disabled /></span>
+            <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" disabled class="hidden"/></span>
+            <.input field={@form[:star]} type="number" label="Star" />
+          </div>
+
+          <div class="max-h-[90%]">
+            <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
+            <div class="font-bold">Tags</div>
+            <div>
+              <%= for x <- tag_zip do %>
+                <div>
+                  <div><%= elem(x, 0).name %></div>
+                  <%= for y <- elem(x, 1) do %>
+                    <div class="inline-block rounded-lg bg-red-300 m-1">
+                    <label class="flex items-center mx-1">
+                        <%= if y.selected do %>
+                          <input type="checkbox" id={"#{y.value}"} name="tags[]" value={"#{y.value}"} checked="true"/><%= inspect y.key %>
+                        <% else %>
+                          <input type="checkbox" id={"#{y.value}"} name="tags[]" value={"#{y.value}"}/><%= inspect y.key %>
+                        <% end %>
+                    </label>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+
+          <:actions>
+            <div class="w-full flex justify-end">
+              <.button phx-disable-with="Saving...">Save File</.button>
+            </div>
+          </:actions>
+
+        </.simple_form>
+      </div>
     </div>
 
     """
@@ -129,6 +109,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   defp save_file(socket, :edit, params) do
     IO.puts "セーブユーザー :edit"
+    IO.puts inspect params
     id = params["id"]
     file_params = params["file"]
     tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
@@ -151,6 +132,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   defp save_file(socket, :new, params) do
     IO.puts "セーブファイル :new"
+
     #タグをくっつける
     file_params = params["file"]
     tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
