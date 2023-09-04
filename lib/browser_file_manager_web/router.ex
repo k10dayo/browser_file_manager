@@ -24,6 +24,8 @@ defmodule BrowserFileManagerWeb.Router do
     live "/live/new/:id", ManagerLive, :new_id
     live "/live/:id/edit", ManagerLive, :edit
 
+    live "live/search", ManagerLive, :search
+
     live "/image_view", ImageView
 
     resources "/properties", PropertyController

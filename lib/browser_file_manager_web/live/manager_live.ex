@@ -83,6 +83,12 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:page_title, "New File")
   end
 
+  defp apply_action(socket, :search, _params) do
+    IO.puts "アプライアクション:search"
+    socket
+    |> assign(:page_title, "Search")
+  end
+
   # :newでsaveしたデータのidをselected.file_dbに入れて、表示を変更させるため
   defp apply_action(socket, :new_id, %{"id" => id}) do
     IO.puts "アプライアクション:new_id"

@@ -6,7 +6,6 @@ defmodule BrowserFileManagerWeb.FormComponent do
   alias BrowserFileManager.FileData
 
   alias BrowserFileManagerWeb.FileHTML
-  alias Phoenix.LiveView.JS
 
   @impl true
   def render(assigns) do
@@ -14,33 +13,34 @@ defmodule BrowserFileManagerWeb.FormComponent do
     ~H"""
     <div class="">
 
-      <div class="h-[10%]">
+      <div class="h-[5%]">
         <.header>
-          <span><%= @title %></span>
+          <span><%= inspect @file_data.file_name %></span>
           <!--<:subtitle>Use this form to manage file records in your database.</:subtitle>-->
           <div></div>
         </.header>
       </div>
 
-      <div class="h-[90%]">
+      <div class="h-[95%]">
         <.simple_form
           for={@form}
           id="file-form"
           phx-target={@myself}
           phx-change="validate"
           phx-submit="save"
+          class="変更 flex h-full ここまで"
         >
 
-          <div class="h-[10%]">
+          <div class="h-[80px]">
             <span class="hidden"><.input field={@form[:name]} type="text" label="Name" disabled /></span>
             <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" disabled class="hidden"/></span>
-            <.input field={@form[:star]} type="number" label="Star" />
+            <.input field={@form[:star]} type="number" label="Star"/>
           </div>
 
-          <div class="max-h-[90%]">
+          <div class="h-[calc(100%-130px)]">
             <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
-            <div class="font-bold">Tags</div>
-            <div>
+            <div class="h-[30px] font-bold">Tags</div>
+            <div class="h-[calc(100%-30px)] overflow-y-scroll">
               <%= for x <- tag_zip do %>
                 <div>
                   <div><%= elem(x, 0).name %></div>
@@ -61,11 +61,11 @@ defmodule BrowserFileManagerWeb.FormComponent do
           </div>
 
 
-          <:actions>
-            <div class="w-full flex justify-end">
-              <.button phx-disable-with="Saving...">Save File</.button>
-            </div>
-          </:actions>
+          <!-- <:actions> -->
+          <div class="h-[50px] w-full flex justify-end">
+            <.button phx-disable-with="Saving...">Save File</.button>
+          </div>
+          <!-- </:actions> -->
 
         </.simple_form>
       </div>

@@ -8,6 +8,9 @@
             </div>
             <div><%= inspect @path %></div>
             <div class="flex">
+                <.link patch={~p"/live/search"}>
+                    <div class="w-[50px] h-[50px] bg-red-300 rounded-lg bg-[url(/images/search.png)] bg-center bg-contain bg-no-repeat"></div>
+                </.link>
                 <div class="w-[50px] h-[50px] bg-red-300 rounded-lg bg-[url(/images/sort.png)] bg-center bg-contain bg-no-repeat" phx-click="detail"></div>
                 <div class="w-[50px] h-[50px] bg-gray-100"></div>
             </div>
@@ -194,6 +197,16 @@
     action={@live_action}
     file={@selected.file_db}
     file_data={@selected}
+    patch={~p"/live?path=#{@path}"}
+    />
+</.modal>
+
+<.modal :if={@live_action in [:search]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
+    <.live_component
+    module={BrowserFileManagerWeb.SearchFormComponent}
+    id={:search}
+    title={@page_title}
+    action={@live_action}
     patch={~p"/live?path=#{@path}"}
     />
 </.modal>
