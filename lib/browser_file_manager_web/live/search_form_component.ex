@@ -13,7 +13,7 @@ defmodule BrowserFileManagerWeb.SearchFormComponent do
             id="file-form"
             phx-target={@myself}
             phx-change="validate"
-            phx-submit="save"
+            phx-submit="search"
             class="変更 flex h-full ここまで"
           >
 
@@ -48,7 +48,7 @@ defmodule BrowserFileManagerWeb.SearchFormComponent do
 
 
             <div class="h-[50px] w-full flex justify-end">
-              <.button phx-disable-with="Saving...">Search File</.button>
+              <.button phx-disable-with="Searching...">Search File</.button>
             </div>
 
           </.simple_form>
@@ -68,6 +68,13 @@ defmodule BrowserFileManagerWeb.SearchFormComponent do
     |> assign_form(changeset)}
   end
 
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    IO.puts "アサインフォーム"
+    socket
+    |> assign(:form, to_form(changeset))
+    |> assign(:changeset, changeset)
+  end
+
   def handle_event("validate", _params, socket) do
     IO.puts "ハンドルイベント validate"
     changeset =
@@ -78,11 +85,27 @@ defmodule BrowserFileManagerWeb.SearchFormComponent do
     {:noreply, assign_form(socket, changeset)}
   end
 
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    IO.puts "アサインフォーム"
+  def handle_event("search", params, socket) do
+    IO.puts "ハンドルイベント search"
+    IO.puts inspect params
+
+    search_url =
+      if Map.has_key?(params, "tags") do
+        tags = Enum.join(params["tags"], ",")
+        command = "or:" <> tags
+        socket.assigns.patch <> "&search=" <> command
+      else
+        socket.assigns.patch
+      end
+
+
+
+    redirect_url = socket.assigns.patch
+    IO.puts inspect redirect_url
+    {:noreply,
     socket
-    |> assign(:form, to_form(changeset))
-    |> assign(:changeset, changeset)
+    |> push_patch(to: search_url)
+    }
   end
 
   defp notify_parent(msg) do

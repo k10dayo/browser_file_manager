@@ -32,8 +32,8 @@ defmodule BrowserFileManagerWeb.FormComponent do
         >
 
           <div class="h-[80px]">
-            <span class="hidden"><.input field={@form[:name]} type="text" label="Name" disabled /></span>
-            <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" disabled class="hidden"/></span>
+            <span class="hidden"><.input field={@form[:name]} type="text" label="Name" readonly /></span>
+            <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" readonly/></span>
             <.input field={@form[:star]} type="number" label="Star"/>
           </div>
 
@@ -86,14 +86,25 @@ defmodule BrowserFileManagerWeb.FormComponent do
     end
     changeset = Content.change_file(file)
 
+
     {:ok,
     socket
-    |> assign(assigns)
+    |> assign(assigns) # socketにassignsをセットする
+    |> assign(file: file) # 上で作成したfileに更新する
     |> assign_form(changeset)}
   end
 
-  def handle_event("validate", %{"file" => file_params}, socket) do
+  # def handle_event("validate", %{"file" => file_params}, socket) do
+  @spec handle_event(<<_::32, _::_*32>>, nil | maybe_improper_list | map, %{
+          :assigns => atom | map,
+          optional(any) => any
+        }) :: {:noreply, map}
+  def handle_event("validate", params, socket) do
     IO.puts "ハンドルイベント validate"
+    IO.puts inspect params
+
+    file_params = params["file"]
+
     changeset =
       socket.assigns.file
       |> Content.change_file(file_params)
@@ -104,12 +115,12 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   def handle_event("save", params, socket) do
     IO.puts "ハンドルイベント save"
+    IO.puts inspect params
     save_file(socket, socket.assigns.action, params)
   end
 
   defp save_file(socket, :edit, params) do
     IO.puts "セーブユーザー :edit"
-    IO.puts inspect params
     id = params["id"]
     file_params = params["file"]
     tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
@@ -135,8 +146,10 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
     #タグをくっつける
     file_params = params["file"]
+
     tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
     file_params = Map.put(file_params, "tag_ids", tag_ids)
+    IO.puts inspect file_params
 
     case Content.create_file(file_params) do
       {:ok, file} ->

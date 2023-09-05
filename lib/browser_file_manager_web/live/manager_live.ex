@@ -45,7 +45,9 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
   defp apply_action(socket, :index, params) do
     IO.puts "アプライアクション:index"
+
     path = socket.assigns.path
+
     current_file_id = Content.get_current_id_entry(path)
 
     #カレントディレクトリの子のファイルデータを取得する
@@ -69,6 +71,50 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:currnet_file_id, current_file_id)
     |> assign(:selected, selected_file_data)
     |> assign(:page_title, "Index File")
+
+    # if Map.has_key?(params, "search") do
+    #   search_way(socket, params)
+    # else
+    #   common_way(socket, params)
+    # end
+  end
+
+  # 一般的なルート（検索じゃないほう）
+  def common_way(socket, params) do
+    IO.puts "コモンウェイ"
+
+    path = socket.assigns.path
+
+    current_file_id = Content.get_current_id_entry(path)
+
+    #カレントディレクトリの子のファイルデータを取得する
+    tmp_file_list = DataShape.get_file_data_list(path)
+    db_children_files = Content.get_db_children_files(path, current_file_id)
+    file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
+    file_list = DataShape.grouping_tags(file_list)
+
+    #選択中ファイルのデータを作る　更新する
+    selected = socket.assigns.selected
+    selected_file_name = DataShape.get_last_folder_name(selected.file_path, selected.file_category)
+    selected_file_data = DataShape.get_file_data(path, selected_file_name, socket.assigns.selected_is_current)
+    db_selected_file = Content.get_db_file(selected.file_db.id)
+    zip_selected_file_data = DataShape.zip_ls_db([selected_file_data], db_selected_file)
+    selected_file_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
+
+    IO.puts inspect Enum.at(file_list, 4)
+
+    socket
+    |> assign(:file_list, file_list)
+    |> assign(:currnet_file_id, current_file_id)
+    |> assign(:selected, selected_file_data)
+    |> assign(:page_title, "Index File")
+  end
+
+  # 検索のときのルート
+  def search_way(socket, params) do
+    IO.puts "サーチウェイ"
+
+    socket
   end
 
   defp apply_action(socket, :edit, _params) do
