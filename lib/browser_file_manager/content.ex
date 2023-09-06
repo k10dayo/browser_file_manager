@@ -338,4 +338,21 @@ defmodule BrowserFileManager.Content do
     end
   end
 
+  # 検索に使う　tag_id_queryは "and:1,2,3_or:4,5,6" 的な感じ
+  def search_files(tag_id_query) do
+    IO.puts "サーチファイルズ"
+
+    # 検索クエリを整理する
+    query_list = String.split(tag_id_query, "_")
+    query_map = Enum.reduce(query_list, %{}, fn i, acc ->
+      x = String.split(i, ":")
+      query_key = String.to_atom(Enum.at(x, 0))
+      query_value = Enum.map(String.split(Enum.at(x, 1), ","), fn j -> String.to_integer(j) end)
+      Map.put(acc, query_key, query_value)
+    end)
+    IO.puts inspect query_map
+
+
+  end
+
 end
