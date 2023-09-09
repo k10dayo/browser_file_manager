@@ -174,7 +174,7 @@
                             </.link>
                         <% end %>
                     </div>
-                    <div class="h-[calc(100%-40px)] overflow-y-scroll">
+                    <div class="h-[calc(100%-80px)] overflow-y-scroll">
                         <% groups = if @selected.group_tags !=nil, do: @selected.group_tags, else: [] %>
                         <%= for g <- groups do%>
                             <div class="mx-2">
@@ -186,6 +186,17 @@
                                 </div>
                             </div>
                         <% end %>
+                    </div>
+                    <div class="h-[40px] bg-gray-100 flex">
+                        <.link href={~p"/properties"} class="mx-1">
+                            <.button>properties</.button>
+                        </.link>
+                        <.link href={~p"/tags"} class="mx-1">
+                            <.button>tags</.button>
+                        </.link>
+                        <.link href={~p"/files"} class="mx-1">
+                            <.button>files</.button>
+                        </.link>
                     </div>
                 </div>
 
