@@ -60,7 +60,7 @@ defmodule BrowserFileManagerWeb.CoreComponents do
         tabindex="0"
       >
         <div class="flex min-h-full items-center justify-center">
-          <div class="変更 flex max-h-screen ここまで w-full max-w-3xl p-4 sm:p-6 lg:py-8">
+          <div class="変更 flex justify-center max-h-screen ここまで w-full max-w-3xl p-4 sm:p-6 lg:py-8">
             <.focus_wrap
               id={"#{@id}-container"}
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}

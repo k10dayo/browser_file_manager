@@ -7,16 +7,16 @@ defmodule BrowserFileManager.Content.File do
     field :star, :integer
     # field :parent_id, :id
     belongs_to :parent, BrowserFileManager.Content.File
-
     many_to_many :tags, BrowserFileManager.Information.Tag, join_through: "file_tags", on_replace: :delete
 
+    field :category, :string
     timestamps()
   end
 
   @doc false
   def changeset(file, attrs) do
     file
-    |> cast(attrs, [:name, :star, :parent_id])
+    |> cast(attrs, [:name, :star, :parent_id, :category])
     |> validate_required([:name])
   end
 end

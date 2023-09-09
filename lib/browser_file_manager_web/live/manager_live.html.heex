@@ -6,7 +6,12 @@
             <div>
                 <div phx-click="change" phx-value-path={"#{@parent_path}"} class="w-[50px] h-[50px] bg-[url(/images/back_button.png)] bg-center bg-contain bg-no-repeat" id="back_button" phx-hook="ChangeUrl"></div>
             </div>
-            <div><%= inspect @path %></div>
+            <div class="overflow-auto" >
+                <%= inspect Enum.at(@where_are_we, 0) %>
+                <%= for i <- Enum.at(@where_are_we, 1) do%>
+                <span class="bg-red-300 w-fit rounded-lg" style="word-break: keep-all;"><%= i %></span>
+                <% end %>
+            </div>
             <div class="flex">
                 <.link patch={~p"/live/search"}>
                     <div class="w-[50px] h-[50px] bg-red-300 rounded-lg bg-[url(/images/search.png)] bg-center bg-contain bg-no-repeat"></div>
@@ -26,7 +31,7 @@
                                     <img src={"/images/folder.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </div>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}} phx-value-selected_file_category={"#{s.file_category}"}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"} phx-value-selected_file_category={"#{s.file_category}"} phx-value-selected_file_img={"#{s.file_img}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -71,7 +76,7 @@
                                     <% end %>
                                 </div>
                             </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"} phx-value-selected_file_category={"#{s.file_category}"} phx-value-selected_file_img={"#{s.file_img}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -110,7 +115,7 @@
                                     <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                                 </div>
                             </.link>
-                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"}}>
+                            <div class="item_info break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"} phx-value-selected_file_category={"#{s.file_category}"} phx-value-selected_file_img={"#{s.file_img}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
                                     <p class="item_name"><%= s.file_name %></p>
@@ -189,24 +194,23 @@
     </nav>
 </div>
 
-<.modal :if={@live_action in [:new, :edit]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
+<.modal :if={@live_action in [:new, :edit]} id="user-modal" show on_cancel={JS.patch("/live?path=#{@path}")}>
     <.live_component
     module={BrowserFileManagerWeb.FormComponent}
     id={@selected.file_db.id || :new}
     title={@page_title}
     action={@live_action}
-    file={@selected.file_db}
-    file_data={@selected}
-    patch={~p"/live?path=#{@path}"}
+    selected={@selected}
+    patch={"/live?path=#{@path}"}
     />
 </.modal>
 
-<.modal :if={@live_action in [:search]} id="user-modal" show on_cancel={JS.patch(~p"/live?path=#{@path}")}>
+<.modal :if={@live_action in [:search]} id="user-modal" show on_cancel={JS.patch("/live?path=#{@path}")}>
     <.live_component
     module={BrowserFileManagerWeb.SearchFormComponent}
     id={:search}
     title={@page_title}
     action={@live_action}
-    patch={~p"/live?path=#{@path}"}
+    patch={"/live?path=#{@path}"}
     />
 </.modal>

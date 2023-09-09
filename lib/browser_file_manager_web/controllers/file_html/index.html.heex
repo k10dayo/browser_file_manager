@@ -19,6 +19,7 @@
 
 <.table id="files" rows={@files} row_click={&JS.navigate(~p"/files/#{&1}")}>
   <:col :let={file} label="Id"><%= file.id %></:col>
+  <:col :let={file} label="Category"><%= file.category %></:col>
   <:col :let={file} label="Name"><%= file.name %></:col>
   <:col :let={file} label="Star"><%= file.star %></:col>
   <:col :let={file} label="ParentId"><%= file.parent_id %></:col>

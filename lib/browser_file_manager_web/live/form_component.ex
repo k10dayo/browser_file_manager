@@ -13,25 +13,26 @@ defmodule BrowserFileManagerWeb.FormComponent do
     ~H"""
     <div class="">
 
-      <div class="h-[5%]">
+      <div class="h-[30px]">
         <.header>
-          <span><%= inspect @file_data.file_name %></span>
+          <span><%= inspect @selected.file_name %></span>
           <!--<:subtitle>Use this form to manage file records in your database.</:subtitle>-->
           <div></div>
         </.header>
       </div>
 
-      <div class="h-[95%]">
+      <div class="h-[calc(100%-30px)]">
         <.simple_form
           for={@form}
           id="file-form"
           phx-target={@myself}
           phx-change="validate"
           phx-submit="save"
-          class="変更 flex h-full ここまで"
+          class="変更 flex h-full"
         >
 
           <div class="h-[80px]">
+            <span class="hidden"><.input field={@form[:category]} type="text" label="Category" readonly/></span>
             <span class="hidden"><.input field={@form[:name]} type="text" label="Name" readonly /></span>
             <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" readonly/></span>
             <.input field={@form[:star]} type="number" label="Star"/>
@@ -77,10 +78,11 @@ defmodule BrowserFileManagerWeb.FormComponent do
   @impl true
   def update(assigns, socket) do
     IO.puts "アップデート"
-    %{file: file} = assigns
+    IO.puts inspect assigns.selected
+    file = assigns.selected.file_db
     #:newだったら、pathを入れる処理
     file = if assigns.action == :new do
-      %File{file | name: assigns.file_data.file_path}
+      %File{file | name: assigns.selected.file_path, category: assigns.selected.file_category}
     else
       file
     end
@@ -99,6 +101,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
           :assigns => atom | map,
           optional(any) => any
         }) :: {:noreply, map}
+
   def handle_event("validate", params, socket) do
     IO.puts "ハンドルイベント validate"
     IO.puts inspect params
