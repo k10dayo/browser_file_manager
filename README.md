@@ -1,11 +1,11 @@
 # BrowserFileManager
 
-環境
+**環境**
   ubuntu (lsコマンドを使用できる環境)
   elixir環境
   apache (xampp)
 
-初期設定
+**初期設定**
   /config/config.exs の config :browser_file_manager　とxamppのipアドレスを入れる
   例　config :browser_file_manager,
         ecto_repos: [BrowserFileManager.Repo],
@@ -16,7 +16,7 @@
   例　DocumentRoot "/home/user/Pictures/file_manager_directory"
       <Directory "/home/user/Pictures/file_manager_directory">
 
-使い方
+**使い方**
   このプロジェクト上で、 mix phx.server　で起動する
 
   localhost:4000/live　がルートファイルになる
@@ -29,7 +29,7 @@
 
   右上の虫眼鏡ボタンから設定したタグの検索が行える、　ルートパスからの検索で、or検索のみ対応
 
-lan内で接続可能にする方法
+**lan内で接続可能にする方法**
   /config/dev.exs
     http: [ip: {127, 0, 0, 1}, port: 4000],を　http: [ip: {0, 0, 0, 0}, port: 4000],　に変更する
   /config/config.exs
