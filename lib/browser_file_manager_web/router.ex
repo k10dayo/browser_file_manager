@@ -17,8 +17,7 @@ defmodule BrowserFileManagerWeb.Router do
   scope "/", BrowserFileManagerWeb do
     pipe_through :browser
 
-    # get "/", PageController, :home
-    live "/", ManagerLive, :index
+    get "/", PageController, :home
 
     live "/live", ManagerLive, :index
     live "/live/new", ManagerLive, :new
