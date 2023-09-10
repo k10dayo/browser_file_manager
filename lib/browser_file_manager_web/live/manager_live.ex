@@ -96,11 +96,12 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     file_list = Content.search_files(params["search"])
     searching_tag = Content.search_tag_names(params["search"])
 
-
+    # こことかちょっと重複していたりするけどじゃっかん違ったりもする　どうする？
     selected = socket.assigns.selected
     selected_file_name = DataShape.get_last_folder_name(selected.file_path, selected.file_category)
     selected_file_data = DataShape.get_file_data(path, selected_file_name, socket.assigns.selected_is_current)
-
+    # 検索のときはここで、内容を変更している
+    selected_file_data = Map.put(selected_file_data, :file_path, socket.assigns.selected.file_path)
     selected_file_data = Map.put(selected_file_data, :file_img, socket.assigns.selected.file_img)
 
     db_selected_file = Content.get_db_file(selected.file_db.id)

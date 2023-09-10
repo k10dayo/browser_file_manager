@@ -110,11 +110,11 @@
                 <%= if s.file_category == "-" do %>
                     <div class={"item_data m-3 #{@detail.file_width} flex"}>
                         <div class="w-[100px]">
-                            <.link href={~p"/live?path=#{s.file_path}"}>
+                            <!-- <.link href={~p"/live?path=#{s.file_path}"}> -->
                                 <div class="w-full h-[100px] bg-gray-300">
                                     <img src={"/images/question_file.png"} class="item_image object-contain w-full h-full">
                                 </div>
-                            </.link>
+                            <!-- </.link> -->
                             <div class="item_info bg-gray-200 break-all h-[50px] overflow-y-hidden" phx-click="selected_file"  phx-click="selected_file" phx-value-selected_file_path={"#{s.file_path}"} phx-value-selected_file_id={"#{s.file_db.id}"} phx-value-selected_file_category={"#{s.file_category}"} phx-value-selected_file_img={"#{s.file_img}"}>
                                 <div class={"#{@detail.detail_off}"}>
                                     <!-- <p><%= s.file_category %></p> -->
@@ -145,7 +145,6 @@
                         </div>
                     </div>
                 <% end %>
-
             <% end %>
 
         </div>
@@ -187,6 +186,7 @@
                             </div>
                         <% end %>
                     </div>
+
                     <div class="h-[40px] flex">
                         <.link href={~p"/properties"} class="mx-1">
                             <.button>properties</.button>
@@ -196,6 +196,9 @@
                         </.link>
                         <.link href={~p"/files"} class="mx-1">
                             <.button>files</.button>
+                        </.link>
+                        <.link href={~p"/copyright"} class="mx-1">
+                            <.button>&copy;</.button>
                         </.link>
                     </div>
                 </div>

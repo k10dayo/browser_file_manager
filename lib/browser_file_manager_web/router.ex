@@ -18,6 +18,7 @@ defmodule BrowserFileManagerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/copyright", PageController, :copyright
 
     live "/live", ManagerLive, :index
     live "/live/new", ManagerLive, :new
