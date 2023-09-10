@@ -78,15 +78,28 @@ defmodule BrowserFileManagerWeb.DataShape do
           row_file_name
         end
       )
-      file_img = (
+      # file_img = (
+      #   case file_category do
+      #     "d" -> "/images/folder.png"
+      #     "i" -> xampp_http_ip <> path <> "/" <> file_name
+      #     "v" -> "/images/video_icon.png"
+      #     "-" -> "/images/question_file.png"
+      #   end
+      # )
+      file_img = case_file_img(file_category, path <> "/" <> file_name)
+      %FileData{file_category: file_category, file_name: file_name, file_img: file_img}
+  end
+
+  def case_file_img(file_category,absolute_path) do
+    xampp_http_ip = Application.fetch_env!(:browser_file_manager, :xampp_http_ip)
+    file_img = (
         case file_category do
           "d" -> "/images/folder.png"
-          "i" -> xampp_http_ip <> path <> "/" <> file_name
+          "i" -> xampp_http_ip <> absolute_path
           "v" -> "/images/video_icon.png"
           "-" -> "/images/question_file.png"
         end
       )
-      %FileData{file_category: file_category, file_name: file_name, file_img: file_img}
   end
 
   #フォルダ名とファイル名のリストを受け取ると、画像だけのリストにして返す
@@ -113,8 +126,9 @@ defmodule BrowserFileManagerWeb.DataShape do
       |> Enum.join("/")
     else
       ""
-    end
-    )
+    end)
+    IO.puts inspect parent_path
+    parent_path
   end
 
 

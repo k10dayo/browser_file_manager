@@ -1,49 +1,38 @@
 # BrowserFileManager
 
-To start your Phoenix server:
+環境
+  ubuntu (lsコマンドを使用できる環境)
+  elixir環境
+  apache (xampp)
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+初期設定
+  /config/config.exs の config :browser_file_manager　とxamppのipアドレスを入れる
+  例　config :browser_file_manager,
+        ecto_repos: [BrowserFileManager.Repo],
+        root: "/home/user/Pictures/",　# ここを設定
+        xampp_http_ip: "http://localhost"　# ここを設定
+  
+  xamppのapacheのhttpd.confなどで上で設定したrootをルートに設定する
+  例　DocumentRoot "/home/user/Pictures/file_manager_directory"
+      <Directory "/home/user/Pictures/file_manager_directory">
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+使い方
+  このプロジェクト上で、 mix phx.server　で起動する
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+  localhost:4000/live　がルートファイルになる
+  localhost:4000/properties　でタグのプロパティを追加する
+  localhost:4000/tags　でタグを設定する
+  localhost:4000/files　は登録されたデータを一覧で見れる　開発用
 
-## Learn more
+  localhost:4000/liveのページで、表示されるファイルの画像部分をクリックすると、そのファイルに入れる（フォルダならその中へ、画像、動画ならviewへ)
+  ファイルの名前部分をクリックすると選択され、右上のハンバーガーボタンからメニューを開くと、選択したファイルの詳細を確認でき、new や editからタグを設定できる
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+  右上の虫眼鏡ボタンから設定したタグの検索が行える、　ルートパスからの検索で、or検索のみ対応
 
-
-#いじったファイル
-config.exs
-  環境変数を設定した
-    root: "/home/unkochan/Pictures/file_manager_directory",
-    xampp_http_ip: "http://localhost"
-    # xampp_http_ip: "http://172.16.232.97"
-router.ex
-  ルートを追加した
-    get "/manager", PageController, :manager
-page_controller.ex
-  アクションを追加、エイリアスの追加
-page_html.ex
-  関数の追加
-manager.html.heex
-  ページ内容の作成
-file_data.ex
-  構造体の定義　作成
-data_shape.ex
-  使いまわす関数の定義
-/assets/css/app.css
-  cssの追加
-root.html.heex
-  jqueryを追加
-priv/static/assets/my_script.js
-  jqueryの記述
-live/image_view.ex
-  LiveViewファイルの作成
-live/image_view.html.heex
-  image_viewの内容の作成
+lan内で接続可能にする方法
+  /config/dev.exs
+    http: [ip: {127, 0, 0, 1}, port: 4000],を　http: [ip: {0, 0, 0, 0}, port: 4000],　に変更する
+  /config/config.exs
+    xampp_http_ip: に自身のプライベートipアドレスのurl？xamppのルートにつながるプライベートipのurlにする
+    例　xampp_http_ip: "http://172.16.232.97"
+    ※　ターミナル上でip -br a とするとipアドレスがでる

@@ -44,7 +44,7 @@ defmodule BrowserFileManagerWeb.FileHTML do
         value: cat.id,
         selected: cat.id in existing_ids,
         property_id: (if cat.property ==nil, do: nil, else: cat.property.id),
-        property: (if cat.property ==nil, do: "無プロパティ", else: cat.property.name)
+        property: (if cat.property ==nil, do: "[]", else: "[" <> cat.property.name <> "]")
         }
       end
 

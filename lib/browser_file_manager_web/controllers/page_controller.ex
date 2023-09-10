@@ -7,4 +7,8 @@ defmodule BrowserFileManagerWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def copyright(conn, _params) do
+    render(conn, :copyright, layout: false)
+  end
 end

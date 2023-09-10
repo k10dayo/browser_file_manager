@@ -1,3 +1,6 @@
+<.link href={~p"/live"} class="mx-3">
+  <.button>manager</.button>
+</.link>
 <.link href={~p"/properties"}>
   <.button>properties</.button>
 </.link>
@@ -19,6 +22,7 @@
 
 <.table id="files" rows={@files} row_click={&JS.navigate(~p"/files/#{&1}")}>
   <:col :let={file} label="Id"><%= file.id %></:col>
+  <:col :let={file} label="Category"><%= file.category %></:col>
   <:col :let={file} label="Name"><%= file.name %></:col>
   <:col :let={file} label="Star"><%= file.star %></:col>
   <:col :let={file} label="ParentId"><%= file.parent_id %></:col>

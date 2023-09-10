@@ -8,6 +8,8 @@ defmodule BrowserFileManager.Content do
 
   alias BrowserFileManager.Content.File
   alias BrowserFileManager.Information.Tag
+  alias BrowserFileManager.FileData
+  alias BrowserFileManagerWeb.DataShape
 
   @doc """
   Returns the list of files.
@@ -229,7 +231,12 @@ defmodule BrowserFileManager.Content do
 
   #絶対パスを取得してくる
   def get_absolute_path(id) do
-    id = String.to_integer(id)
+    #文字列だったら数値にする
+    id = if is_binary id do
+      String.to_integer(id)
+    else
+      id
+    end
     sql ="
       WITH RECURSIVE connected_files AS (
       SELECT id, name, parent_id
@@ -300,19 +307,13 @@ defmodule BrowserFileManager.Content do
     if path == "" do
       db_files = Repo.all(from u in File, where: is_nil u.parent_id)
       |> Repo.preload(:tags)
-      Enum.map(db_files, fn db_file ->
-        tags = db_file.tags |> Repo.preload(:property)
-        %File{db_file | tags: tags}
-      end)
+      db_file_list_preload_properties(db_files)
     else
       #current_file_idを持ってる場合は検索
       if current_file_id != nil do
         db_files = Repo.all(from u in File, where: u.parent_id == ^current_file_id)
         |> Repo.preload(:tags)
-        Enum.map(db_files, fn db_file ->
-          tags = db_file.tags |> Repo.preload(:property)
-          %File{db_file | tags: tags}
-        end)
+        db_file_list_preload_properties(db_files)
       else
         []
       end
@@ -336,6 +337,73 @@ defmodule BrowserFileManager.Content do
     else
       []
     end
+  end
+
+  # File型を格納したリストのtagをプリロードする関数
+  def db_file_list_preload_properties(db_file_list) do
+    Enum.map(db_file_list, fn db_file ->
+      tags = db_file.tags |> Repo.preload(:property)
+      %File{db_file | tags: tags}
+    end)
+  end
+
+  def search_tag_names(tag_id_query) do
+    IO.puts "サーチタグネームズ"
+    query_map = query_map = tidy_tag_id_query(tag_id_query)
+
+    or_tag_name = Repo.all(from c in Tag, select: c.name, where: c.id in ^query_map.or)
+  end
+
+  # 検索に使う　tag_id_queryは "and:1,2,3_or:4,5,6" 的な感じ
+  def search_files(tag_id_query) do
+    IO.puts "サーチファイルズ"
+
+    query_map = tidy_tag_id_query(tag_id_query)
+    IO.puts inspect query_map
+
+    or_file_ids = search_files_or(query_map.or)
+
+    file_ids = [] ++ or_file_ids
+
+    search_file_list = Repo.all(from c in File, where: c.id in ^file_ids) |> Repo.preload(:tags)
+    search_file_list = db_file_list_preload_properties(search_file_list)
+
+    file_list = Enum.map(search_file_list, fn file ->
+      absolute_path = get_absolute_path(file.id)
+      %FileData{
+        file_category: file.category,
+        file_name: file.name,
+        file_db: file,
+        file_path: absolute_path,
+        file_img: DataShape.case_file_img(file.category, absolute_path)
+      }
+    end)
+
+    DataShape.grouping_tags(file_list)
+  end
+
+  # 検索クエリをマップに整形する %{and: [1,2,3], or: [4,5,6]}
+  defp tidy_tag_id_query(tag_id_query) do
+    query_list = String.split(tag_id_query, "_")
+    query_map = Enum.reduce(query_list, %{}, fn i, acc ->
+      x = String.split(i, ":")
+      query_key = String.to_atom(Enum.at(x, 0))
+      query_value = Enum.map(String.split(Enum.at(x, 1), ","), fn j -> String.to_integer(j) end)
+      Map.put(acc, query_key, query_value)
+    end)
+  end
+
+  defp search_files_or(tag_ids) do
+    sql = "SELECT DISTINCT * FROM file_tags WHERE tag_id IN"
+    sql_tag_ids = " (" <> Enum.join(tag_ids, ",") <> ")"
+    sql = sql <> sql_tag_ids
+    sql = sql <> ";"
+    IO.puts sql
+    {:ok, result} = Ecto.Adapters.SQL.query(BrowserFileManager.Repo, sql)
+
+    or_file_ids = Enum.map(result.rows, fn [i, j] -> i end) |> Enum.uniq()
+    IO.puts "オア：" <> inspect or_file_ids
+    or_file_ids
   end
 
 end

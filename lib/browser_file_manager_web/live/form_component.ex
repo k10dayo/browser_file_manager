@@ -6,89 +6,70 @@ defmodule BrowserFileManagerWeb.FormComponent do
   alias BrowserFileManager.FileData
 
   alias BrowserFileManagerWeb.FileHTML
-  alias Phoenix.LiveView.JS
-
-  # def mount(params, session, socket) do
-  #   IO.puts "まうんとおおおおおおおおおおおおおお"
-  #   IO.puts inspect session
-  #   IO.puts inspect socket
-  #   {:ok, socket, layout: false}
-  # end
 
   @impl true
   def render(assigns) do
     IO.puts "レンダー"
     ~H"""
-    <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage file records in your database.</:subtitle>
-      </.header>
+    <div class="">
 
-      <.simple_form
-        for={@form}
-        id="file-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-      >
-      <.input field={@form[:name]} type="text" label="Name" />
-      <.input field={@form[:star]} type="number" label="Star" />
-      <.input field={@form[:parent_id]} type="number" label="Parent" />
-
-      <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
-      <div class="font-bold">Tags</div>
-      <div>
-        <select multiple="multiple" name="tags[]"} id="multiple" phx-hook="MultipleSelect">
-          <%= for x <- tag_zip do %>
-            <optgroup label={"#{elem(x, 0).name}"}>
-              <%= for y <- elem(x, 1) do%>
-                <%= if y.selected do%>
-                  <option value={"#{y.value}"} selected="true" ><%= inspect y.key %></option>
-                <% else %>
-                <option value={"#{y.value}"}><%= inspect y.key %></option>
-                <% end %>
-
-              <% end %>
-            </optgroup>
-          <% end %>
-        </select>
+      <div class="h-[30px]">
+        <.header>
+          <span><%= inspect @selected.file_name %></span>
+          <!--<:subtitle>Use this form to manage file records in your database.</:subtitle>-->
+          <div></div>
+        </.header>
       </div>
-        <:actions>
-          <.button phx-disable-with="Saving...">Save File</.button>
-        </:actions>
-      </.simple_form>
 
-      <div id="test">わお</div>
-      <script src="/assets/test.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-      <script src="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.js"></script>
-      <script src="/assets/multiple_select.min.js"></script>
-      <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.6.0/dist/multiple-select.min.css">
+      <div class="h-[calc(100%-30px)]">
+        <.simple_form
+          for={@form}
+          id="file-form"
+          phx-target={@myself}
+          phx-change="validate"
+          phx-submit="save"
+          class="変更 flex h-full"
+        >
 
-      <script>
-        $(function () {
-            $('select').multipleSelect({
-                width: 500,
-                isOpen: true,
-                keepOpen: true,
-                multiple: true,
-                filter: true,
-                filterGroup: true,
-                hideOptgroupCheckboxes: true,
-                multipleWidth: "auto",
-                formatSelectAll: function() {
-                    return 'すべて';
-                },
-                formatAllSelected: function() {
-                    return '全て選択されています';
-                },
-                styler: function(row) {
-                    return 'max-width: 150px'
-                }
-            });
-        });
-      </script>
+          <div class="h-[80px]">
+            <span class="hidden"><.input field={@form[:category]} type="text" label="Category" readonly/></span>
+            <span class="hidden"><.input field={@form[:name]} type="text" label="Name" readonly /></span>
+            <span class="hidden"><.input field={@form[:parent_id]} type="number" label="Parent" readonly/></span>
+            <.input field={@form[:star]} type="number" label="Star"/>
+          </div>
+
+          <div class="h-[calc(100%-130px)]">
+            <% tag_zip = FileHTML.tag_select_origin @form, @changeset %>
+            <div class="h-[30px] font-bold">Tags</div>
+            <div class="h-[calc(100%-30px)] overflow-y-scroll">
+              <%= for x <- tag_zip do %>
+                <div>
+                  <div><%= elem(x, 0).name %></div>
+                  <%= for y <- elem(x, 1) do %>
+                    <div class="inline-block rounded-lg bg-red-300 m-1">
+                    <label class="flex items-center mx-1">
+                        <%= if y.selected do %>
+                          <input type="checkbox" id={"#{y.value}"} name="tags[]" value={"#{y.value}"} checked="true"/><%= inspect y.key %>
+                        <% else %>
+                          <input type="checkbox" id={"#{y.value}"} name="tags[]" value={"#{y.value}"}/><%= inspect y.key %>
+                        <% end %>
+                    </label>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+
+          <!-- <:actions> -->
+          <div class="h-[50px] w-full flex justify-end">
+            <.button phx-disable-with="Saving...">Save File</.button>
+          </div>
+          <!-- </:actions> -->
+
+        </.simple_form>
+      </div>
     </div>
 
     """
@@ -97,23 +78,36 @@ defmodule BrowserFileManagerWeb.FormComponent do
   @impl true
   def update(assigns, socket) do
     IO.puts "アップデート"
-    %{file: file} = assigns
+    IO.puts inspect assigns.selected
+    file = assigns.selected.file_db
     #:newだったら、pathを入れる処理
     file = if assigns.action == :new do
-      %File{file | name: assigns.file_data.file_path}
+      %File{file | name: assigns.selected.file_path, category: assigns.selected.file_category}
     else
       file
     end
     changeset = Content.change_file(file)
 
+
     {:ok,
     socket
-    |> assign(assigns)
+    |> assign(assigns) # socketにassignsをセットする
+    |> assign(file: file) # 上で作成したfileに更新する
     |> assign_form(changeset)}
   end
 
-  def handle_event("validate", %{"file" => file_params}, socket) do
+  # def handle_event("validate", %{"file" => file_params}, socket) do
+  @spec handle_event(<<_::32, _::_*32>>, nil | maybe_improper_list | map, %{
+          :assigns => atom | map,
+          optional(any) => any
+        }) :: {:noreply, map}
+
+  def handle_event("validate", params, socket) do
     IO.puts "ハンドルイベント validate"
+    IO.puts inspect params
+
+    file_params = params["file"]
+
     changeset =
       socket.assigns.file
       |> Content.change_file(file_params)
@@ -124,6 +118,7 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   def handle_event("save", params, socket) do
     IO.puts "ハンドルイベント save"
+    IO.puts inspect params
     save_file(socket, socket.assigns.action, params)
   end
 
@@ -151,10 +146,13 @@ defmodule BrowserFileManagerWeb.FormComponent do
 
   defp save_file(socket, :new, params) do
     IO.puts "セーブファイル :new"
+
     #タグをくっつける
     file_params = params["file"]
+
     tag_ids = if Map.has_key?(params, "tags"), do: params["tags"], else: []
     file_params = Map.put(file_params, "tag_ids", tag_ids)
+    IO.puts inspect file_params
 
     case Content.create_file(file_params) do
       {:ok, file} ->

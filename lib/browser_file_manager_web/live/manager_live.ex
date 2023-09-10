@@ -5,8 +5,6 @@ defmodule BrowserFileManagerWeb.ManagerLive do
   alias BrowserFileManager.Content
   alias BrowserFileManager.FileData
 
-  alias Phoenix.LiveView.JS
-
   def mount(params, _session, socket) do
     IO.puts "マウント"
 
@@ -22,9 +20,12 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     db_current_file = Content.get_db_file(current_file_id)
     zip_current_folder_data = DataShape.zip_ls_db([current_folder_data], db_current_file)
     current_folder_data = Enum.at(DataShape.grouping_tags(zip_current_folder_data), 0)
+    IO.puts "カレントフォルダデータ"
+    IO.puts inspect current_folder_data
 
     socket = socket
     |> assign(:path, path)
+    |> assign(:test, "path=&search=or:1")
     |> assign(:xampp_http_ip, xampp_http_ip)
     |> assign(:parent_path, parent_path)
     |> assign(:currnet_file_id, current_file_id)
@@ -38,23 +39,37 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
   def handle_params(params, _url, socket) do
     IO.puts "ハンドルパラムス"
-    # html要素をelixir側で取得できないかためしたけどわからないやつ↓
-    # IO.puts inspect JS.show(to: "#side_menu")
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :index, params) do
     IO.puts "アプライアクション:index"
-    path = socket.assigns.path
-    current_file_id = Content.get_current_id_entry(path)
 
+
+    if Map.has_key?(params, "search") do
+      search_way(socket, params)
+    else
+      common_way(socket, params)
+    end
+  end
+
+  # 一般的なルート（検索じゃないほう）
+  def common_way(socket, params) do
+    IO.puts "コモンウェイ"
+
+    path = socket.assigns.path
+
+    current_file_id = Content.get_current_id_entry(path)
+    IO.puts inspect path
+    IO.puts inspect current_file_id
     #カレントディレクトリの子のファイルデータを取得する
     tmp_file_list = DataShape.get_file_data_list(path)
+    IO.puts inspect Enum.at(tmp_file_list, 0)
     db_children_files = Content.get_db_children_files(path, current_file_id)
     file_list = DataShape.zip_ls_db(tmp_file_list, db_children_files)
     file_list = DataShape.grouping_tags(file_list)
 
-    #選択中ファイルのデータを作る　更新する
+    #選択中ファイルのデータを作る　更新する これがないと、タグつけたときに更新されない
     selected = socket.assigns.selected
     selected_file_name = DataShape.get_last_folder_name(selected.file_path, selected.file_category)
     selected_file_data = DataShape.get_file_data(path, selected_file_name, socket.assigns.selected_is_current)
@@ -62,13 +77,43 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     zip_selected_file_data = DataShape.zip_ls_db([selected_file_data], db_selected_file)
     selected_file_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
 
-    IO.puts inspect Enum.at(file_list, 4)
-
     socket
     |> assign(:file_list, file_list)
+    |> assign(:where_are_we, [path, []])
     |> assign(:currnet_file_id, current_file_id)
     |> assign(:selected, selected_file_data)
     |> assign(:page_title, "Index File")
+  end
+
+  # 検索のときのルート
+  def search_way(socket, params) do
+    IO.puts "サーチウェイ"
+    IO.puts inspect params
+    path = params["path"]
+    search_query = params["search"]
+
+    path = path <> "&search=" <> search_query
+    file_list = Content.search_files(params["search"])
+    searching_tag = Content.search_tag_names(params["search"])
+
+    # こことかちょっと重複していたりするけどじゃっかん違ったりもする　どうする？
+    selected = socket.assigns.selected
+    selected_file_name = DataShape.get_last_folder_name(selected.file_path, selected.file_category)
+    selected_file_data = DataShape.get_file_data(path, selected_file_name, socket.assigns.selected_is_current)
+    # 検索のときはここで、内容を変更している
+    selected_file_data = Map.put(selected_file_data, :file_path, socket.assigns.selected.file_path)
+    selected_file_data = Map.put(selected_file_data, :file_img, socket.assigns.selected.file_img)
+
+    db_selected_file = Content.get_db_file(selected.file_db.id)
+    zip_selected_file_data = DataShape.zip_ls_db([selected_file_data], db_selected_file)
+    selected_file_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
+
+
+    socket
+    |> assign(:path, path)
+    |> assign(:file_list, file_list)
+    |> assign(:where_are_we, ["検索", searching_tag])
+    |> assign(:selected, selected_file_data)
   end
 
   defp apply_action(socket, :edit, _params) do
@@ -81,6 +126,12 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     IO.puts "アプライアクション:new"
     socket
     |> assign(:page_title, "New File")
+  end
+
+  defp apply_action(socket, :search, _params) do
+    IO.puts "アプライアクション:search"
+    socket
+    |> assign(:page_title, "Search")
   end
 
   # :newでsaveしたデータのidをselected.file_dbに入れて、表示を変更させるため
@@ -100,7 +151,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
 
     parent_path = DataShape.get_parent_path(path)
     current_file_id = Content.get_current_id_entry(path)
-    IO.puts "カレントファイルID" <> inspect current_file_id
+    IO.puts "カレントファイルID：" <> inspect current_file_id
 
     #カレントディレクトリの子のファイルデータを取得する
     tmp_file_list = DataShape.get_file_data_list(path)
@@ -119,6 +170,7 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:file_list, file_list)
     |> assign(:parent_path, parent_path)
     |> assign(:path, path)
+    |> assign(:where_are_we, [path, []])
     |> assign(:current_file_id, current_file_id)
     |> assign(:selected_is_currnet, true)
     |> assign(:selected, current_folder_data)
@@ -143,12 +195,13 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     selected_file_path =  params["selected_file_path"]
     selected_file_id = params["selected_file_id"]
     selected_file_category = params["selected_file_category"]
+    selected_file_img = params["selected_file_img"]
 
     #選択したフォルダーのデータを作る
     selected_file_name = DataShape.get_last_folder_name(selected_file_path, selected_file_category)
-
     selected_folder_data = DataShape.get_file_data(path, selected_file_name, false)
-    IO.puts inspect selected_folder_data.file_path
+    selected_folder_data = Map.put(selected_folder_data, :file_path, selected_file_path)
+    selected_folder_data = Map.put(selected_folder_data, :file_img, selected_file_img)
     db_selected_file = Content.get_db_file(selected_file_id)
     zip_selected_file_data = DataShape.zip_ls_db([selected_folder_data], db_selected_file)
     selected_folder_data = Enum.at(DataShape.grouping_tags(zip_selected_file_data), 0)
@@ -171,4 +224,5 @@ defmodule BrowserFileManagerWeb.ManagerLive do
     |> assign(:detail, detail)
     {:noreply, socket}
   end
+
 end

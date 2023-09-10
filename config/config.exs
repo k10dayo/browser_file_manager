@@ -9,7 +9,7 @@ import Config
 
 config :browser_file_manager,
   ecto_repos: [BrowserFileManager.Repo],
-  root: "/home/unkochan/Pictures/file_manager_directory",
+  root: "/home/user/Pictures/file_manager_directory",
   xampp_http_ip: "http://localhost"
   # xampp_http_ip: "http://172.16.232.97"
 

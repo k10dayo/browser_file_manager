@@ -6,6 +6,7 @@ defmodule BrowserFileManager.Repo.Migrations.CreateFiles do
       add :name, :string
       add :star, :integer, default: 0, null: false
       add :parent_id, references(:files, on_delete: :nothing)
+      add :category, :char
 
       timestamps()
     end
