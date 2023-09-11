@@ -1,6 +1,6 @@
 # BrowserFileManager
 
-**環境**
+**環境**  
   ubuntu (lsコマンドを使用できる環境)
   elixir環境
   apache (xampp)
