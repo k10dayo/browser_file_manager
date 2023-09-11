@@ -15,7 +15,8 @@ defmodule BrowserFileManagerWeb.DataShape do
     # IO.puts "フルパス: " <> join_path
 
     #　linuxコマンドを打って、結果を整える
-    ls_data = System.shell("cd #{join_path} && ls -p --group-directories-first")
+    # ls_data = System.shell("cd #{join_path} && ls -p --group-directories-first")　ディレクトリトラバーサル
+    ls_data = System.cmd("ls", [join_path, "-p", "--group-directories-first"])
     |> DataShape.format_ls()
 
     IO.puts inspect ls_data
