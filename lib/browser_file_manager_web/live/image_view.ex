@@ -76,6 +76,9 @@ defmodule BrowserFileManagerWeb.ImageView do
             current_image_index
         end
         )
+        IO.puts "いやっっはあああああああああああああああああ"
+        IO.puts inspect image_list
+        IO.puts inspect current_image_index
         current_image_name = Enum.at(image_list, current_image_index)
         content_path = @xampp_http_ip <> parent_path <> "/" <> current_image_name
 
@@ -100,7 +103,8 @@ defmodule BrowserFileManagerWeb.ImageView do
         end)
 
         parent_path = @root_path <> parent_path
-        image_list = System.shell("cd #{parent_path} && ls")
+        # image_list = System.shell("cd #{parent_path} && ls")
+        image_list = System.cmd("ls", [parent_path])
         |> DataShape.format_ls()
         |> DataShape.filter_images()
     end
