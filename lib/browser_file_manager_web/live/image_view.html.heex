@@ -1,6 +1,6 @@
 <div class="w-screen h-screen bg-gray-500 flex justify-center relative">
     <!-- 拡張子が画像のときと動画のときの分岐 -->
-    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["png", "jpg", "jpeg", "webp"] do %>
+    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["jpg", "JPG", "jpeg", "JPGE", "png", "PNG", "webp"] do %>
         <img src={"#{@content_path}"} class="object-contain">
 
         <!-- 左右のボタン --->
@@ -12,7 +12,7 @@
         </div>
         <div class="absolute right-0 bg-blue-100 h-full w-[20%] flex opacity-5" phx-click="right"><img src="/images/right_arrow.png" class="m-auto"></div>
     <% end %>
-    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["mp4"] do %>
+    <%= if Enum.at(String.split(@image_path, "."), Enum.count(String.split(@image_path, "."))-1) in ["mp4", "MP4", "MOV"] do %>
             <video src={"#{@content_path}"} autoplay controls></video>
 
             <div class="absolute left-0 w-[50px] h-[50px]">

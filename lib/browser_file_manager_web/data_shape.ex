@@ -66,8 +66,8 @@ defmodule BrowserFileManagerWeb.DataShape do
           #　文字列を "." でスプリットして、jpg等だったら "i" を一緒に返す　それ以外は "-" を返す
           dot_split = String.split(row_file_name, ".")
           case Enum.at(dot_split, Enum.count(dot_split)-1) do
-            n when n in ["jpg", "jpeg", "png", "webp"] -> "i"
-            n when n in ["mp4"] -> "v"
+            n when n in ["jpg", "JPG", "jpeg", "JPGE", "png", "PNG", "webp"] -> "i"
+            n when n in ["mp4", "MP4", "MOV"] -> "v"
             _ -> "-"
           end
         end
@@ -109,7 +109,7 @@ defmodule BrowserFileManagerWeb.DataShape do
     |> Enum.filter(
       fn s ->
         Enum.member?(
-          ["png", "jpg", "jpeg", "webp"],
+          ["jpg", "JPG", "jpeg", "JPGE", "png", "PNG", "webp"],
           Enum.at(
             String.split(s, "."), Enum.count(String.split(s, "."))-1
           )
