@@ -10,6 +10,11 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
+    <!-- アドレスバー非表示 --->
+    <!-- iOS用 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Android用 -->
+    <meta name="mobile-web-app-capable" content="yes">
   </head>
   <body class="bg-white antialiased">
     <%= @inner_content %>
