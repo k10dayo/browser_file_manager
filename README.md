@@ -7,14 +7,16 @@
 
 **初期設定**  
   /config/config.exs の config :browser_file_manager　の　root:にルートに設定したい絶対パス、xampp_http_ip:にapacheのドキュメントルートにアクセスするurlを設定する  
-  例　config :browser_file_manager,  
-        ecto_repos: [BrowserFileManager.Repo],  
-        root: "/home/user/Pictures",　# ここを設定  
-        xampp_http_ip: "http://localhost"　# ここを設定  
+  例  
+  config :browser_file_manager,  
+    ecto_repos: [BrowserFileManager.Repo],  
+    root: "/home/user/Pictures",　# ここを設定  
+    xampp_http_ip: "http://localhost"　# ここを設定  
   
   apacheのhttpd.confで、上で設定したrootをドキュメントルートに設定する  
-  例　DocumentRoot "/home/user/Pictures"  
-      <Directory "/home/user/Pictures">  
+  例  
+  DocumentRoot "/home/user/Pictures"  
+    <Directory "/home/user/Pictures">  
 
 **使い方**  
   リポジトリをcloneする　　
