@@ -1,5 +1,8 @@
 # BrowserFileManager
 
+バグ　　
+・apacheのパス内に # % が入ってると、そのパスの画像が表示されなくなる
+
 **環境**  
 　Ubuntu (lsコマンドを使用できる環境)  
 　Elixir,Phoenixフレームワーク  
