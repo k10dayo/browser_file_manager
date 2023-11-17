@@ -173,7 +173,7 @@
                             </.link>
                         <% end %>
                     </div>
-                    <div class="h-[calc(100%-80px)] overflow-auto">
+                    <div class="h-[calc(100%-100px)] overflow-auto">
                         <% groups = if @selected.group_tags !=nil, do: @selected.group_tags, else: [] %>
                         <%= for g <- groups do%>
                             <div class="mx-2">
@@ -197,9 +197,12 @@
                         <.link href={~p"/files"} class="mx-1">
                             <.button>files</.button>
                         </.link>
-                        <.link href={~p"/copyright"} class="mx-1">
+                        <!-- <.link href={~p"/copyright"} class="mx-1">
                             <.button>&copy;</.button>
-                        </.link>
+                        </.link> -->
+                    </div>
+                    <div class="h-[20px] text-sm text-center">
+                        <a href="https://www.flaticon.com/free-icons/folder" title="folder icons">Folder icons created by Freepik - Flaticon</a>
                     </div>
                 </div>
 
